@@ -1,0 +1,15 @@
+AllCops:
+  TargetRubyVersion: 2.0
+
+Metrics/LineLength:
+  Max: 135
+
+Metrics/MethodLength:
+  Max: 15
+
+Metrics/BlockLength:
+  Exclude:
+    - 'Rakefile'
+    - '**/*.rake'
+    - 'spec/**/*.rb'
+    - '*.gemspec'
