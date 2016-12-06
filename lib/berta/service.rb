@@ -9,8 +9,16 @@ module Berta
 
     def running_vms
       vm_pool = OpenNebula::VirtualMachinePool.new(@client) 
-      vm_pool.info_all
+      raise Berta::BackendError, 'Failed to fetch vms' \
+        unless vm_pool.info_all == nil
 			vm_pool
+    end
+    
+    def set_expiration_date(date, vm)
+    end
+
+    def set_notified(vm)
+      raise Berta::BackendError, 'Failed to set notified to vm' unless vm.update("NOTIFIED = #{Time.now.to_i}", true) == nil
     end
   end
 end

@@ -20,4 +20,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'thor', '~> 0.19'
   s.add_runtime_dependency 'settingslogic', '~> 2.0'
   s.add_runtime_dependency 'yell', '~> 2.0'
+  s.add_runtime_dependency 'opennebula', '5.2.0'
 end
