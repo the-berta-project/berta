@@ -1,3 +1,5 @@
+require 'opennebula'
+
 module Berta
   class Service
     def initialize(endpoint = 'http://147.251.17.221:2633/RPC2')
@@ -6,9 +8,9 @@ module Berta
     end
 
     def running_vms
-      vm_pool = OpenNebula::VirtualMachinePool.new(client) 
+      vm_pool = OpenNebula::VirtualMachinePool.new(@client) 
       vm_pool.info_all
-      vm_pool.map { |vm| vm }
+			vm_pool
     end
   end
 end
