@@ -1,24 +1,27 @@
 require 'opennebula'
 
 module Berta
+  # Berta service for communication with OpenNebula
   class Service
-    def initialize(endpoint = 'http://147.251.17.221:2633/RPC2')
+    # Initializes service object
+    #
+    # @param secret [String] opennebula secret
+    # @param endpoint [String] endpoint of OpenNebula
+    def initialize(secret, endpoint)
       @endpoint = endpoint
-      @client = OpenNebula::Client.new('oneadmin:opennebula', @endpoint)
+      @client = OpenNebula::Client.new(secret, @endpoint)
     end
 
+    # Fetch running vms from OpenNebula
+    #
+    # @return [OpenNebula::VirtualMachinePool] virtual machines
+    #   running on OpenNebula
+    # @raise [Berta::BackendError] if connection to OpenNebula failed
     def running_vms
-      vm_pool = OpenNebula::VirtualMachinePool.new(@client) 
+      vm_pool = OpenNebula::VirtualMachinePool.new(@client)
       raise Berta::BackendError, 'Failed to fetch vms' \
-        unless vm_pool.info_all == nil
-			vm_pool
-    end
-    
-    def set_expiration_date(date, vm)
-    end
-
-    def set_notified(vm)
-      raise Berta::BackendError, 'Failed to set notified to vm' unless vm.update("NOTIFIED = #{Time.now.to_i}", true) == nil
+        unless vm_pool.info_all.nil?
+      vm_pool
     end
   end
 end
