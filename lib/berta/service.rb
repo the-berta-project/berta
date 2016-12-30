@@ -3,6 +3,9 @@ require 'opennebula'
 module Berta
   # Berta service for communication with OpenNebula
   class Service
+    attr_reader :endpoint
+    attr_reader :client
+
     # Initializes service object
     #
     # @param secret [String] opennebula secret
@@ -19,8 +22,7 @@ module Berta
     # @raise [Berta::BackendError] if connection to OpenNebula failed
     def running_vms
       vm_pool = OpenNebula::VirtualMachinePool.new(@client)
-      raise Berta::BackendError, 'Failed to fetch vms' \
-        unless vm_pool.info_all.nil?
+      Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       vm_pool
     end
   end
