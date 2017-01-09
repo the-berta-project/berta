@@ -1,14 +1,29 @@
+require 'opennebula'
+
 module Berta
+  # Berta service for communication with OpenNebula
   class Service
-    def initialize(endpoint = 'http://147.251.17.221:2633/RPC2')
+    attr_reader :endpoint
+    attr_reader :client
+
+    # Initializes service object
+    #
+    # @param secret [String] opennebula secret
+    # @param endpoint [String] endpoint of OpenNebula
+    def initialize(secret, endpoint)
       @endpoint = endpoint
-      @client = OpenNebula::Client.new('oneadmin:opennebula', @endpoint)
+      @client = OpenNebula::Client.new(secret, @endpoint)
     end
 
+    # Fetch running vms from OpenNebula
+    #
+    # @return [OpenNebula::VirtualMachinePool] virtual machines
+    #   running on OpenNebula
+    # @raise [Berta::BackendError] if connection to OpenNebula failed
     def running_vms
-      vm_pool = OpenNebula::VirtualMachinePool.new(client) 
-      vm_pool.info_all
-      vm_pool.map { |vm| vm }
+      vm_pool = OpenNebula::VirtualMachinePool.new(@client)
+      Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
+      vm_pool
     end
   end
 end

@@ -1,0 +1,44 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:2633/RPC2
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" ?><methodCall><methodName>one.vmpool.info</methodName><params><param><value><string>ahoj:miso</string></value></param><param><value><i4>-2</i4></value></param><param><value><i4>-1</i4></value></param><param><value><i4>-1</i4></value></param><param><value><i4>-1</i4></value></param></params></methodCall>
+    headers:
+      User-Agent:
+      - XMLRPC::Client (Ruby 2.2.4)
+      Content-Type:
+      - text/xml; charset=utf-8
+      Content-Length:
+      - '325'
+      Connection:
+      - close
+      Accept-Encoding:
+      - identity
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml; charset=utf-8
+      Content-Length:
+      - '331'
+      Connection:
+      - close
+      Date:
+      - Mon, 09 Jan 2017 12:03:23 UTC
+      Server:
+      - Xmlrpc-c_Abyss/1.40.0
+    body:
+      encoding: UTF-8
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<methodResponse>\r\n<params>\r\n<param><value><array><data>\r\n<value><boolean>0</boolean></value>\r\n<value><string>[VirtualMachinePoolInfo]
+        User couldn't be authenticated, aborting call.</string></value>\r\n<value><i4>256</i4></value>\r\n</data></array></value></param>\r\n</params>\r\n</methodResponse>\r\n"
+    http_version: 
+  recorded_at: Mon, 09 Jan 2017 12:03:24 GMT
+recorded_with: VCR 3.0.3
