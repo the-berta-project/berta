@@ -6,6 +6,12 @@ module Berta
       # Class designed to help with working with OpenNebula
       class Helper
         class << self
+          ERRORS = Hash.new(Berta::Errors::OpenNebula::ResourceRetrievalError)
+                       .update(::OpenNebula::Error::EAUTHENTICATION => Berta::Errors::OpenNebula::AuthenticationError,
+                               ::OpenNebula::Error::EAUTHORIZATION => Berta::Errors::OpenNebula::UserNotAuthorizedError,
+                               ::OpenNebula::Error::ENO_EXISTS => Berta::Errors::OpenNebula::ResourceNotFoundError,
+                               ::OpenNebula::Error::EACTION => Berta::Errors::OpenNebula::ResourceStateError)
+                       .freeze
           # Handles OpenNebula error codes and turns them into exceptions
           #
           # @raise [Berta::Errors::OpenNebula::AuthenticationError]
@@ -31,12 +37,7 @@ module Berta
           # @return [Berta::Errors::OpenNebula::ResourceStateError]
           # @return [Berta::Errors::OpenNebula::ResourceRetrievalError]
           def decode_error(errno)
-            errors = { ::OpenNebula::Error::EAUTHENTICATION => Berta::Errors::OpenNebula::AuthenticationError,
-                       ::OpenNebula::Error::EAUTHORIZATION => Berta::Errors::OpenNebula::UserNotAuthorizedError,
-                       ::OpenNebula::Error::ENO_EXISTS => Berta::Errors::OpenNebula::ResourceNotFoundError,
-                       ::OpenNebula::Error::EACTION => Berta::Errors::OpenNebula::ResourceStateError }
-            errors.default = Berta::Errors::OpenNebula::ResourceRetrievalError
-            errors[errno]
+            ERRORS[errno]
           end
         end
       end
