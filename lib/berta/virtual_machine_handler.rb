@@ -1,6 +1,6 @@
 module Berta
   # Class for Berta operations on virtual machines
-  # 
+  #
   # @author Dusan Baran
   class VirtualMachineHandler
     attr_reader :handle
@@ -13,8 +13,8 @@ module Berta
     #
     # @note This method modifies OpenNebula database
     # @raise [BackendError] if connection to service failed
-    def notified=
-      Berta::Utils::OpenNebula::Helper.handle_error
+    def update_notified
+      Berta::Utils::OpenNebula::Helper.handle_error \
         { @handle.update("NOTIFIED = #{Time.now.to_i}", true) }
     end
 
@@ -35,21 +35,22 @@ module Berta
     # Sets schelude action to virtual machine. This command
     #   modifies USER_TEMPLATE of virtual machine.
     #
-    # TODO
-    def expiration=(time, action)
+    # @param [Numeric] Time when to notifie user
+    # @param [String] Action to perform on given time
+    def update_expiration(time, action)
       template = <<-EOT
       SCHED_ACTION = [
           ACTION = "#{action}",
           TIME   = "#{time}"
       ]
       EOT
-      Berta::Utils::OpenNebula::Helper.handle_error
+      Berta::Utils::OpenNebula::Helper.handle_error \
         { @handle.update(template, true) }
     end
 
     # @return [Numeric] Time when expiration action will be
     #   executed. Time is in UNIX epoch time format.
-    def expiration
+    def expiration_time
       time = @handle['USER_TEMPLATE/SCHED_ACTION/TIME']
       time.to_i if time
     end
@@ -58,7 +59,12 @@ module Berta
     #
     # @return [Boolean] True if expiration action was set, else False
     def expiration?
-      !expiration.nil?
+      !(expiration_time.nil? && expiration_action.nil?)
+    end
+
+    # @return [String] Action that will execute on expiration
+    def expiration_action
+      @handle['USER_TEMPLATE/SCHED_ACTION/ACTION']
     end
   end
 end
