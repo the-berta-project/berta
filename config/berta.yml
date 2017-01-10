@@ -1,6 +1,14 @@
 berta:
-  action: # Action that will be set for execution
+  opennebula:
+    secret:
+    url:
+  expiration: # Action that will be set for execution
     offset: 864000 # Time until action will be executed
-    type: suspend # Type of action that will be executed
+    action: suspend # Type of action that will be executed
   notification:
-    time: 86400 # Time when user should be notified before action will be executed
+    deadline: 86400 # Time when user should be notified before action will be executed
+  whitelist:
+    id:
+    user:
+    group:
+    cluster:
