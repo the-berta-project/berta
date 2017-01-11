@@ -4,7 +4,7 @@ describe Berta::Service do
   subject(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
 
   describe '#new' do
-    it 'return instace of Service with given data' do
+    it 'returns instace of Service with given data' do
       expect(service.endpoint).not_to be_empty
     end
 
