@@ -1,14 +1,14 @@
 berta:
   opennebula:
-    secret:
-    url:
-  expiration: # Action that will be set for execution
-    offset: 864000 # Time until action will be executed
+    secret:         # Secret for OpenNebula authentication
+    endpoint:       # OpenNebula backend endpoint
+  expiration:       # Action that will be set for execution
+    offset: 864000  # Time until action will be executed
     action: suspend # Type of action that will be executed
   notification:
     deadline: 86400 # Time when user should be notified before action will be executed
-  whitelist:
-    id:
-    user:
-    group:
-    cluster:
+  whitelist:        # Whitelist VMs to ignore them
+    id:             # VMs with this IDs will be ignored
+    user:           # VMs owned by this users will be ignored
+    group:          # VMs in this groups will be ignored
+    cluster:        # VMs in this clusters will be ignored
