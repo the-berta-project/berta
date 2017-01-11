@@ -30,9 +30,10 @@ module Berta
     #
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
-    def update_expiration(time, action)
+    def add_expiration(time, action)
       template = <<-EOT
       SCHED_ACTION = [
+          ID     = "#{max_sched_action_id}"
           ACTION = "#{action}",
           TIME   = "#{time}"
       ]
@@ -41,23 +42,16 @@ module Berta
         { handle.update(template, true) }
     end
 
-    # @return [Numeric] Time when expiration action will be
-    #   executed. Time is in UNIX epoch time format.
-    def expiration_time
-      time = handle['USER_TEMPLATE/SCHED_ACTION/TIME']
-      time.to_i if time
+    def expirations
+      handle.to_hash['VM']['USER_TEMPLATE']['SCHED_ACTION'].map do |sah|
+        Berta::Entities::Expiration.from_hash(sah)
+      end
     end
 
-    # Checks if expiration action was set
-    #
-    # @return [Boolean] True if expiration action was set, else False
-    def expiration?
-      expiration_time && expiration_action
-    end
+  private
 
-    # @return [String] Action that will execute on expiration
-    def expiration_action
-      handle['USER_TEMPLATE/SCHED_ACTION/ACTION']
+    def max_sched_action_id
+      handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID').to_a.max.to_i
     end
   end
 end

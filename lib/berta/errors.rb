@@ -4,5 +4,6 @@ module Berta
     autoload :StandardError, 'berta/errors/standard_error'
     autoload :BackendError, 'berta/errors/backend_error'
     autoload :OpenNebula, 'berta/errors/opennebula'
+    autoload :Entities, 'berta/errors/entities'
   end
 end
