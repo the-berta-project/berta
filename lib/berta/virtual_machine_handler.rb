@@ -30,16 +30,11 @@ module Berta
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
     def add_expiration(time, action)
-      template = <<-EOT
-      SCHED_ACTION = [
-          ID     = "#{next_sched_action_id}",
-          ACTION = "#{action}",
-          TIME   = "#{time}"
-      ]
-      EOT
-      expirations.each do |exp|
-        template += exp.template
-      end
+      template = \
+        Berta::Entities::Expiration.new(next_sched_action_id,
+                                        action,
+                                        time).template
+      expirations.each { |exp| template += exp.template }
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update(template, true) }
     end
@@ -49,9 +44,8 @@ module Berta
     # @return [Array<Expiration>] All expirations on vm
     def expirations
       exps = []
-      handle.each('USER_TEMPLATE/SCHED_ACTION') do |saxml|
-        exps.push(Berta::Entities::Expiration.from_xml(saxml))
-      end
+      handle.each('USER_TEMPLATE/SCHED_ACTION') \
+        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
       exps
     end
 
