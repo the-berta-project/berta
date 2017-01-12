@@ -1,7 +1,5 @@
 module Berta
   # Class for Berta operations on virtual machines
-  #
-  # @author Dusan Baran
   class VirtualMachineHandler
     attr_reader :handle
 
@@ -25,33 +23,44 @@ module Berta
       time.to_i if time
     end
 
-    # Sets schelude action to virtual machine. This command
-    #   modifies USER_TEMPLATE of virtual machine.
+    # Adds schelude action to virtual machine. This command
+    #   modifies USER_TEMPLATE of virtual machine. But does 
+    #   not delete old variables is USER_TEMPLATE.
     #
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
     def add_expiration(time, action)
       template = <<-EOT
       SCHED_ACTION = [
-          ID     = "#{max_sched_action_id}"
+          ID     = "#{next_sched_action_id}",
           ACTION = "#{action}",
           TIME   = "#{time}"
       ]
       EOT
+      expirations.each do |exp|
+        template += exp.template
+      end
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update(template, true) }
     end
 
+    # Returns array of expirations on vm
+    #
+    # @return [Array<Expiration>] All expirations on vm
     def expirations
-      handle.to_hash['VM']['USER_TEMPLATE']['SCHED_ACTION'].map do |sah|
-        Berta::Entities::Expiration.from_hash(sah)
+      exps = []
+      handle.each('USER_TEMPLATE/SCHED_ACTION') do |saxml|
+        exps.push(Berta::Entities::Expiration.from_xml(saxml))
       end
+      exps
     end
 
-  private
+    private
 
-    def max_sched_action_id
-      handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID').to_a.max.to_i
+    def next_sched_action_id
+      elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
+      return 0 unless elems
+      elems.to_a.max.to_i + 1
     end
   end
 end

@@ -41,25 +41,55 @@ describe Berta::VirtualMachineHandler do
   end
 
   describe '.add_expiration' do
-    context 'with valid response', :vcr do
+    context 'vms have no expiration set', :vcr do
       it 'updates expiration date' do
         service.running_vms.each do |vm|
-          vm.add_expiration(1_484_049_636, 'suspend')
+          vm.add_expiration(1_484_326_148, 'suspend')
         end
         service.running_vms.each do |vm|
-          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/TIME']).to eq('1484049636')
+          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ID']).to eq('0')
+          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/TIME']).to eq('1484326148')
           expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ACTION']).to eq('suspend')
+        end
+      end
+    end
+
+    context 'vms have one expiration set', :vcr do
+      it 'updates expiration date' do
+        service.running_vms.each do |vm|
+          vm.add_expiration(1_484_426_148, 'resume')
+        end
+        service.running_vms.each do |vm|
+          expect(vm.expirations.length).to eq(2)
         end
       end
     end
   end
 
   describe '.expirations' do
-    context 'with valid response', :vcr do
+    context 'with vms with only 1 expiration date', :vcr do
       it 'returns array of expirations' do
         service.running_vms.each do |vm|
           exps = vm.expirations
           expect(exps.length).to eq(1)
+        end
+      end
+    end
+
+    context 'with vms with 2 expiration dates', :vcr do
+      it 'returns array of expirations' do
+        service.running_vms.each do |vm|
+          exps = vm.expirations
+          expect(exps.length).to eq(2)
+        end
+      end
+    end
+
+    context 'with vms with no expiration dates', :vcr do
+      it 'returns array of expirations that is empty' do
+        service.running_vms.each do |vm|
+          exps = vm.expirations
+          expect(exps.length).to eq(0)
         end
       end
     end

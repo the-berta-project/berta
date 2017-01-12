@@ -1,7 +1,7 @@
 module Berta
   module Errors
     module Entities
-      class InvalidEntityHashError < StandardError ; end
+      class InvalidEntityXMLError < StandardError; end
     end
   end
 end
