@@ -1,7 +1,5 @@
 module Berta
   # Class for Berta operations on virtual machines
-  #
-  # @author Dusan Baran
   class VirtualMachineHandler
     attr_reader :handle
 
@@ -25,39 +23,38 @@ module Berta
       time.to_i if time
     end
 
-    # Sets schelude action to virtual machine. This command
-    #   modifies USER_TEMPLATE of virtual machine.
+    # Adds schelude action to virtual machine. This command
+    #   modifies USER_TEMPLATE of virtual machine. But does
+    #   not delete old variables is USER_TEMPLATE.
     #
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
-    def update_expiration(time, action)
-      template = <<-EOT
-      SCHED_ACTION = [
-          ACTION = "#{action}",
-          TIME   = "#{time}"
-      ]
-      EOT
+    def add_expiration(time, action)
+      template = \
+        Berta::Entities::Expiration.new(next_sched_action_id,
+                                        action,
+                                        time).template
+      expirations.each { |exp| template += exp.template }
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update(template, true) }
     end
 
-    # @return [Numeric] Time when expiration action will be
-    #   executed. Time is in UNIX epoch time format.
-    def expiration_time
-      time = handle['USER_TEMPLATE/SCHED_ACTION/TIME']
-      time.to_i if time
-    end
-
-    # Checks if expiration action was set
+    # Returns array of expirations on vm
     #
-    # @return [Boolean] True if expiration action was set, else False
-    def expiration?
-      expiration_time && expiration_action
+    # @return [Array<Expiration>] All expirations on vm
+    def expirations
+      exps = []
+      handle.each('USER_TEMPLATE/SCHED_ACTION') \
+        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
+      exps
     end
 
-    # @return [String] Action that will execute on expiration
-    def expiration_action
-      handle['USER_TEMPLATE/SCHED_ACTION/ACTION']
+    private
+
+    def next_sched_action_id
+      elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
+      return 0 unless elems
+      elems.to_a.max.to_i + 1
     end
   end
 end
