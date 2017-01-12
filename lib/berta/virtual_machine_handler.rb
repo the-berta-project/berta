@@ -24,7 +24,7 @@ module Berta
     end
 
     # Adds schelude action to virtual machine. This command
-    #   modifies USER_TEMPLATE of virtual machine. But does 
+    #   modifies USER_TEMPLATE of virtual machine. But does
     #   not delete old variables is USER_TEMPLATE.
     #
     # @param [Numeric] Time when to notify user
