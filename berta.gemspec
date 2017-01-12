@@ -23,4 +23,5 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'settingslogic', '~> 2.0'
   s.add_runtime_dependency 'yell', '~> 2.0'
   s.add_runtime_dependency 'opennebula', '~> 5.2.0'
+  s.add_runtime_dependency 'chronic_duration', '~> 0.10.6'
 end
