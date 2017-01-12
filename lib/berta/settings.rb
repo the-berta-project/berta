@@ -17,11 +17,11 @@ module Berta
     namespace 'berta'
 
     def self.notification_deadline
-      ChronicDuration.parse(self.get('notification.deadline'))
+      ChronicDuration.parse(get('notification.deadline'))
     end
 
     def self.expiration_offset
-      ChronicDuration.parse(self.get('expiration.offset'))
+      ChronicDuration.parse(get('expiration.offset'))
     end
   end
 end
