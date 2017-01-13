@@ -32,9 +32,19 @@ module Berta
     def add_expiration(time, action)
       template = \
         Berta::Entities::Expiration.new(next_sched_action_id,
-                                        action,
-                                        time).template
+                                        time,
+                                        action).template
       expirations.each { |exp| template += exp.template }
+      Berta::Utils::OpenNebula::Helper.handle_error \
+        { handle.update(template, true) }
+    end
+
+    # Sets array of expirations to vm, rewrites all old ones
+    #
+    # @param [Array<Expiration>] Expirations to use
+    def update_expirations(exps)
+      template = ''
+      exps.each { |exp| template += exp.template }
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update(template, true) }
     end
