@@ -17,7 +17,7 @@ module Berta
       handle.info
     end
 
-    # @return [Numeric] Time when notified was set.
+    # @return [Numeric] Time when notified was set else nil.
     #   Time is in UNIX epoch time format.
     def notified
       time = handle['USER_TEMPLATE/NOTIFIED']

@@ -12,7 +12,7 @@ module Berta
     # @param endpoint [String] endpoint of OpenNebula
     def initialize(secret, endpoint)
       @endpoint = endpoint
-      @client = OpenNebula::Client.new(secret, @endpoint)
+      @client = OpenNebula::Client.new(secret, endpoint)
     end
 
     # Fetch running vms from OpenNebula
@@ -21,9 +21,15 @@ module Berta
     #   running on OpenNebula
     # @raise [Berta::BackendError] if connection to OpenNebula failed
     def running_vms
-      vm_pool = OpenNebula::VirtualMachinePool.new(@client)
+      vm_pool = OpenNebula::VirtualMachinePool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) }
+    end
+
+    def users
+      user_pool = OpenNebula::UserPool.new(client)
+      Berta::Utils::OpenNebula::Helper.handle_error { user_pool.info }
+      user_pool
     end
   end
 end
