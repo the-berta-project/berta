@@ -7,8 +7,10 @@ module Berta
     # @param [Array<VirtualMachineHandler>] virtual machines
     #   to update expiration on
     def update_expirations(vms)
-      vms.each { |vm| remove_invalid_expirations(vm) }
-      vms.each { |vm| add_default_expiration(vm) }
+      vms.each do |vm|
+        remove_invalid_expirations(vm)
+        add_default_expiration(vm)
+      end
     end
 
     # Removes invalid expirations on vm
