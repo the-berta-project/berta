@@ -41,7 +41,8 @@ module Berta
       handle.info
     end
 
-    # Sets array of expirations to vm, rewrites all old ones
+    # Sets array of expirations to vm, rewrites all old ones.
+    #   Receiving empty array wont change anything.
     #
     # @param [Array<Expiration>] Expirations to use
     def update_expirations(exps)
