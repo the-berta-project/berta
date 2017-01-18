@@ -5,7 +5,7 @@ module Berta
       @default_expiration_date = Time.now.to_i + Berta::Settings.expiration_offset
     end
 
-    # Update all expirations on vm, removes invalid ex[irations
+    # Update all expirations on vm, removes invalid expirations
     #   and if needed will set default expiration date
     #
     # @param [Array<VirtualMachineHandler>] virtual machines
