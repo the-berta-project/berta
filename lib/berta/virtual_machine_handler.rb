@@ -14,6 +14,7 @@ module Berta
     def update_notified
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update("NOTIFIED = #{Time.now.to_i}", true) }
+      handle.info
     end
 
     # @return [Numeric] Time when notified was set.
@@ -32,11 +33,24 @@ module Berta
     def add_expiration(time, action)
       template = \
         Berta::Entities::Expiration.new(next_sched_action_id,
-                                        action,
-                                        time).template
+                                        time,
+                                        action).template
       expirations.each { |exp| template += exp.template }
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update(template, true) }
+      handle.info
+    end
+
+    # Sets array of expirations to vm, rewrites all old ones.
+    #   Receiving empty array wont change anything.
+    #
+    # @param [Array<Expiration>] Expirations to use
+    def update_expirations(exps)
+      template = ''
+      exps.each { |exp| template += exp.template }
+      Berta::Utils::OpenNebula::Helper.handle_error \
+        { handle.update(template, true) }
+      handle.info
     end
 
     # Returns array of expirations on vm

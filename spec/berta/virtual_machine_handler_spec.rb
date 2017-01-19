@@ -94,4 +94,27 @@ describe Berta::VirtualMachineHandler do
       end
     end
   end
+
+  describe '.update_expirations' do
+    context 'with empty array', :vcr do
+      it 'wont change anything' do
+        service.running_vms.each do |vm|
+          old_length = vm.expirations.length
+          vm.update_expirations([])
+          expect(vm.expirations.length).to eq(old_length)
+        end
+      end
+    end
+
+    context 'with one expiration', :vcr do
+      it 'sets all vms exactly one expiration' do
+        service.running_vms.each do |vm|
+          vm.update_expirations([Berta::Entities::Expiration.new(0,
+                                                                 Time.now.to_i + 3600,
+                                                                 'suspend')])
+          expect(vm.expirations.length).to eq(1)
+        end
+      end
+    end
+  end
 end
