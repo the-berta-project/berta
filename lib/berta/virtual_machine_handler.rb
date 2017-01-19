@@ -25,7 +25,7 @@ module Berta
     end
 
     # @return [Boolean] If this vm should be notified
-    def should_notify
+    def should_notify?
       return false if notified
       expiration = default_expiration
       return false unless expiration
@@ -78,7 +78,7 @@ module Berta
     # @return [Expiration] nearest default expiration
     def default_expiration
       expirations
-        .find_all { |exp| exp.action == Berta::Settings.expiration.action && exp.in_expiration_interval? }
+        .find_all { |exp| exp.default_action? && exp.in_expiration_interval? }
         .min { |exp| exp.time.to_i }
     end
 

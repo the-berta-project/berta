@@ -1,10 +1,6 @@
 module Berta
   # Class for managing expiration dates on vms
   class ExpirationManager
-    def initialize
-      @default_expiration_date = Time.now.to_i + Berta::Settings.expiration_offset
-    end
-
     # Update all expirations on vm, removes invalid expirations
     #   and if needed will set default expiration date
     #
@@ -22,8 +18,7 @@ module Berta
     # @param [VirtualMachineHandler] vm
     def remove_invalid_expirations(vm)
       exps = vm.expirations
-      exps.keep_if \
-        { |exp| exp.time.to_i <= @default_expiration_date }
+      exps.keep_if(&:in_expiration_interval?)
       vm.update_expirations(exps)
     end
 

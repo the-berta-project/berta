@@ -162,7 +162,7 @@ describe Berta::VirtualMachineHandler do
       end
     end
 
-    context 'with invalid default action expiration date', :vcr do
+    context 'with invalid expiration with default action', :vcr do
       it 'return nil' do
         service.running_vms.each do |vm|
           expect(vm.default_expiration).to be_nil

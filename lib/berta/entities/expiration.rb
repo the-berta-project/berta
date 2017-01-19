@@ -48,6 +48,10 @@ module Berta
       def in_expiration_interval?
         time.to_i - Time.now.to_i <= Berta::Settings.expiration_offset
       end
+
+      def default_action?
+        action == Berta::Settings.expiration.action
+      end
     end
   end
 end

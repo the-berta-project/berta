@@ -9,11 +9,11 @@ module Berta
 
     def initialize(service)
       @service = service
-      @email_template_path = "#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}" \
-        if File.exist?("#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}")
+      @email_template_path = "#{File.dirname(__FILE__)}/../../config/#{EMAIL_TEMPLATE}"
       @email_template_path = "etc/berta/#{EMAIL_TEMPLATE}" \
         if File.exist?("etc/berta/#{EMAIL_TEMPLATE}")
-      @email_template_path = "#{File.dirname(__FILE__)}/../../config/#{EMAIL_TEMPLATE}"
+      @email_template_path = "#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}" \
+        if File.exist?("#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}")
       @email_template = Tilt.new(@email_template_path)
     end
 
@@ -33,7 +33,7 @@ module Berta
     # @param [Array<VirtualMachineHandler>]
     # @return [Hash<String, Array<VirtualMachineHandler>>]
     def uids_to_notify(vms)
-      notif = vms.keep_if(&:should_notify)
+      notif = vms.keep_if(&:should_notify?)
       uidsvm = Hash.new([])
       notif.each { |vm| uidsvm[vm.handle['UID']] += [vm] }
       uidsvm
