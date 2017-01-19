@@ -24,4 +24,6 @@ Gem::Specification.new do |s|
   s.add_runtime_dependency 'yell', '~> 2.0'
   s.add_runtime_dependency 'opennebula', '~> 5.2.0'
   s.add_runtime_dependency 'chronic_duration', '~> 0.10.6'
+  s.add_runtime_dependency 'mail', '~> 2.6.4'
+  s.add_runtime_dependency 'tilt', '~> 2.0.5'
 end

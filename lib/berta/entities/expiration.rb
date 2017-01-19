@@ -40,6 +40,14 @@ module Berta
       ]
       EOT
       end
+
+      def in_notification_interval?
+        time.to_i - Time.now.to_i <= Berta::Settings.notification_deadline
+      end
+
+      def in_expiration_interval?
+        time.to_i - Time.now.to_i <= Berta::Settings.expiration_offset
+      end
     end
   end
 end

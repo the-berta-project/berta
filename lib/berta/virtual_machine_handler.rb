@@ -24,6 +24,14 @@ module Berta
       time.to_i if time
     end
 
+    # @return [Boolean] If this vm should be notified
+    def should_notify
+      return false if notified
+      expiration = default_expiration
+      return false unless expiration
+      expiration.in_notification_interval?
+    end
+
     # Adds schelude action to virtual machine. This command
     #   modifies USER_TEMPLATE of virtual machine. But does
     #   not delete old variables is USER_TEMPLATE.
@@ -60,6 +68,24 @@ module Berta
       handle.each('USER_TEMPLATE/SCHED_ACTION') \
         { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
       exps
+    end
+
+    # Return default expiration, that means expiration with
+    #   default expiration action that is in expiration offset interval
+    #   and is closes to current date
+    #
+    # @return [Expiration] nearest default expiration
+    def default_expiration
+      expirations
+        .find_all { |exp| exp.action == Berta::Settings.expiration.action && exp.in_expiration_interval? }
+        .min { |exp| exp.time.to_i }
+    end
+
+    # Return name of virtual machine
+    #
+    # @return [String] name of virtual machine
+    def name
+      handle['NAME']
     end
 
     private

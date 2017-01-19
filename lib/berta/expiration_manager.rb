@@ -29,7 +29,7 @@ module Berta
     # @param [VirtualMachineHandler] vm
     def add_default_expiration(vm)
       vm.add_expiration(Time.now.to_i + Berta::Settings.expiration_offset, Berta::Settings.expiration.action) \
-        unless vm.expirations.any? { |exp| exp.action == Berta::Settings.expiration.action }
+        unless vm.default_expiration
     end
   end
 end
