@@ -48,5 +48,12 @@ describe Berta::NotificationManager do
         expect(Mail::TestMailer.deliveries.first.to).to eq(['ben.dover@gmail.ru'])
       end
     end
+
+    context 'with noone to notify', :vcr do
+      it 'wont send email' do
+        notification_manager.notify_users(service.running_vms)
+        expect(Mail::TestMailer.deliveries.length).to eq(0)
+      end
+    end
   end
 end
