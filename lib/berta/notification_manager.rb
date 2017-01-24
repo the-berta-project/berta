@@ -5,16 +5,17 @@ require 'tilt'
 module Berta
   # Class for managing notifications, setting and sending them
   class NotificationManager
-    EMAIL_TEMPLATE = 'email.erb'.freeze
+    attr_reader :service, :email_template
 
     def initialize(service)
       @service = service
-      @email_template_path = "#{File.dirname(__FILE__)}/../../config/#{EMAIL_TEMPLATE}"
-      @email_template_path = "etc/berta/#{EMAIL_TEMPLATE}" \
-        if File.exist?("etc/berta/#{EMAIL_TEMPLATE}")
-      @email_template_path = "#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}" \
-        if File.exist?("#{ENV['HOME']}/.berta/#{EMAIL_TEMPLATE}")
-      @email_template = Tilt.new(@email_template_path)
+      email_file = 'email.erb'.freeze
+      email_template_path = "#{File.dirname(__FILE__)}/../../config/#{email_file}"
+      email_template_path = "etc/berta/#{email_file}" \
+        if File.exist?("etc/berta/#{email_file}")
+      email_template_path = "#{ENV['HOME']}/.berta/#{email_file}" \
+        if File.exist?("#{ENV['HOME']}/.berta/#{email_file}")
+      @email_template = Tilt.new(email_template_path)
     end
 
     # Notifies users. Finds all users that should be notified
@@ -23,10 +24,18 @@ module Berta
     # @param [Array<VirtualMachineHandler>] Virtual machines
     #   to check for notifications.
     def notify_users(vms)
-      users = @service.users
+      users = service.users
       uids_to_notify(vms).each do |uid, uvms|
         user = users.find { |usr| usr['ID'] == uid }
-        send_notification(user, uvms)
+        next unless user
+        begin
+          send_notification(user, uvms)
+        rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
+          puts e.message
+          # log here
+        else
+          uvms.each(&:update_notified)
+        end
       end
     end
 
@@ -47,15 +56,14 @@ module Berta
     def send_notification(user, vms)
       user_email = user['TEMPLATE/EMAIL']
       user_name = user['NAME']
-      return nil unless user_email
-      email_body = @email_template.render(Hash, user_name: user_name, vms: vms)
-      Mail.deliver do
-        from Berta::Settings.email.from
-        to user_email
-        subject Berta::Settings.email.subject
-        body email_body
-      end
-      vms.each(&:update_notified)
+      raise Berta::Errors::Entities::NoUserEmailError "User: #{user_name} has no email set" \
+        unless user_email
+      mail = Mail.new(email_template.render(Hash,
+                                            user_email: user_email,
+                                            user_name: user_name,
+                                            vms: vms))
+      mail.delivery_method :sendmail
+      mail.deliver
     end
   end
 end

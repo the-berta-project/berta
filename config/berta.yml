@@ -1,7 +1,4 @@
 berta:
-  email:
-    subject: OpenNebula VM expiration
-    from: berta@mail.muni.cz
   opennebula:
     secret:         # Secret for OpenNebula authentication
     endpoint:       # OpenNebula backend endpoint
