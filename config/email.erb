@@ -7,5 +7,5 @@ your vms are about to expire..
 
 VM Name | Expiration Date
 <% vms.each do |vm| %>
-	<%= vm.name %> | <%= Time.at(vm.default_expiration.time.to_i) %>
+	<%= vm.name %> | <%= Time.at(vm.expiration) %>
 <% end %>

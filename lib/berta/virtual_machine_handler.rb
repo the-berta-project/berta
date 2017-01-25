@@ -82,13 +82,6 @@ module Berta
         .min { |exp| exp.time.to_i }
     end
 
-    # Return name of virtual machine
-    #
-    # @return [String] name of virtual machine
-    def name
-      handle['NAME']
-    end
-
     private
 
     def next_sched_action_id
