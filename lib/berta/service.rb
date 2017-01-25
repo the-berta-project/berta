@@ -43,9 +43,9 @@ module Berta
 
     def whitelisted?(vmh)
       whitelisted_id?(vmh) ||
-      whitelisted_user?(vmh) ||
-      whitelisted_group?(vmh) ||
-      whitelisted_cluster?(vmh)
+        whitelisted_user?(vmh) ||
+        whitelisted_group?(vmh) ||
+        whitelisted_cluster?(vmh)
     end
 
     def whitelisted_id?(vmh)
@@ -65,11 +65,15 @@ module Berta
 
     def whitelisted_cluster?(vmh)
       return unless Berta::Settings.whitelist.clusters
+      vmcid = latest_cluster(vmh)
+      Berta::Settings.whitelist.clusters.find { |cid| vmcid == cid } if vmcid
+    end
+
+    def latest_cluster(vmh)
       cidtime = []
       vmh.handle.each('HISTORY_RECORDS/HISTORY') \
         { |history| cidtime << [history['CID'], history['STIME']] }
-      vmcid = cidtime.max { |ct| ct[1] }[0]
-      Berta::Settings.whitelist.clusters.find { |cid| vmcid == cid } if mvcid
+      cidtime.max { |ct| ct[1] }[0]
     end
 
     def running?(vmh)

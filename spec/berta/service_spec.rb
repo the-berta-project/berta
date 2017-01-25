@@ -14,10 +14,118 @@ describe Berta::Service do
   end
 
   describe '.running_vms' do
-    context 'with valid response', :vcr do
+    context 'with empty whitelist', :vcr do
       it 'gets running vms' do
         vms = service.running_vms
-        expect(vms.count).to eq(3)
+        expect(vms.count).to eq(2)
+      end
+    end
+
+    context 'with whitelist with id', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['ids'] = %w(6 420)
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 1 vm' do
+        vms = service.running_vms
+        expect(vms.count).to eq(1)
+      end
+    end
+
+    context 'with whitelist with users', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['users'] = ['0']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with whitelist with groups', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['groups'] = ['0']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with whitelist with groups that doesnt exist', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['groups'] = ['666']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
+      end
+    end
+
+    context 'with whitelist with clusters', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['clusters'] = %w(0 666)
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with whitelist with clusters that doesnt exist', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['clusters'] = ['666']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
+      end
+    end
+
+    context 'with whitelist with all set but invalid', :vcr do
+      before(:each) do
+        Berta::Settings.whitelist['clusters'] = ['666']
+        Berta::Settings.whitelist['users'] = ['333']
+        Berta::Settings.whitelist['ids'] = ['420']
+        Berta::Settings.whitelist['groups'] = ['911']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
       end
     end
 
