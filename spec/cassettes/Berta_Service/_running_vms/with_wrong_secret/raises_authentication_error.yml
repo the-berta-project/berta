@@ -32,7 +32,7 @@ http_interactions:
       Connection:
       - close
       Date:
-      - Wed, 25 Jan 2017 13:00:33 UTC
+      - Wed, 25 Jan 2017 13:38:37 UTC
       Server:
       - Xmlrpc-c_Abyss/1.40.0
     body:
@@ -40,5 +40,5 @@ http_interactions:
       string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<methodResponse>\r\n<params>\r\n<param><value><array><data>\r\n<value><boolean>0</boolean></value>\r\n<value><string>[VirtualMachinePoolInfo]
         User couldn't be authenticated, aborting call.</string></value>\r\n<value><i4>256</i4></value>\r\n</data></array></value></param>\r\n</params>\r\n</methodResponse>\r\n"
     http_version: 
-  recorded_at: Wed, 25 Jan 2017 13:00:35 GMT
+  recorded_at: Wed, 25 Jan 2017 13:38:39 GMT
 recorded_with: VCR 3.0.3

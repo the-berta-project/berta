@@ -39,6 +39,12 @@ module Berta
       user_pool
     end
 
+    def clusters
+      cluster_pool = OpenNebula::ClusterPool.new(client)
+      Berta::Utils::OpenNebula::Helper.handle_error { cluster_pool.info }
+      cluster_pool
+    end
+
     private
 
     def whitelisted?(vmh)
@@ -54,22 +60,25 @@ module Berta
     end
 
     def whitelisted_user?(vmh)
-      Berta::Settings.whitelist.users.find { |user| vmh.handle['UID'] == user } \
-        if vmh.handle['UID'] && Berta::Settings.whitelist.users
+      Berta::Settings.whitelist.users.find { |user| vmh.handle['UNAME'] == user } \
+        if vmh.handle['UNAME'] && Berta::Settings.whitelist.users
     end
 
     def whitelisted_group?(vmh)
-      Berta::Settings.whitelist.groups.find { |group| vmh.handle['GID'] == group } \
-        if vmh.handle['GID'] && Berta::Settings.whitelist.groups
+      Berta::Settings.whitelist.groups.find { |group| vmh.handle['GNAME'] == group } \
+        if vmh.handle['GNAME'] && Berta::Settings.whitelist.groups
     end
 
     def whitelisted_cluster?(vmh)
       return unless Berta::Settings.whitelist.clusters
-      vmcid = latest_cluster(vmh)
-      Berta::Settings.whitelist.clusters.find { |cid| vmcid == cid } if vmcid
+      vmcid = latest_cluster_id(vmh)
+      vmcluster = clusters.find { |cluster| cluster['ID'] == vmcid }
+      return unless vmcluster
+      Berta::Settings.whitelist.clusters.find { |name| vmcluster['NAME'] == name } \
+        if vmcluster['NAME']
     end
 
-    def latest_cluster(vmh)
+    def latest_cluster_id(vmh)
       cidtime = []
       vmh.handle.each('HISTORY_RECORDS/HISTORY') \
         { |history| cidtime << [history['CID'], history['STIME']] }

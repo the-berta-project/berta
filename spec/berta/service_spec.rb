@@ -38,7 +38,7 @@ describe Berta::Service do
 
     context 'with whitelist with users', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['users'] = ['0']
+        Berta::Settings.whitelist['users'] = ['oneadmin']
       end
 
       after(:each) do
@@ -53,7 +53,7 @@ describe Berta::Service do
 
     context 'with whitelist with groups', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['groups'] = ['0']
+        Berta::Settings.whitelist['groups'] = ['oneadmin']
       end
 
       after(:each) do
@@ -68,7 +68,7 @@ describe Berta::Service do
 
     context 'with whitelist with groups that doesnt exist', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['groups'] = ['666']
+        Berta::Settings.whitelist['groups'] = ['group']
       end
 
       after(:each) do
@@ -83,7 +83,7 @@ describe Berta::Service do
 
     context 'with whitelist with clusters', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = %w(0 666)
+        Berta::Settings.whitelist['clusters'] = %w(default notsodefault)
       end
 
       after(:each) do
@@ -98,7 +98,7 @@ describe Berta::Service do
 
     context 'with whitelist with clusters that doesnt exist', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = ['666']
+        Berta::Settings.whitelist['clusters'] = ['himum']
       end
 
       after(:each) do
@@ -113,10 +113,10 @@ describe Berta::Service do
 
     context 'with whitelist with all set but invalid', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = ['666']
-        Berta::Settings.whitelist['users'] = ['333']
-        Berta::Settings.whitelist['ids'] = ['420']
-        Berta::Settings.whitelist['groups'] = ['911']
+        Berta::Settings.whitelist['clusters'] = ['ahojmiso']
+        Berta::Settings.whitelist['users'] = ['totoje']
+        Berta::Settings.whitelist['groups'] = ['test']
+        Berta::Settings.whitelist['ids'] = ['8']
       end
 
       after(:each) do
