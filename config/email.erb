@@ -1,0 +1,18 @@
+<%# Avaliable parametes: %>
+<%# [String] user_name   %>
+<%# [String] user_email  %>
+<%# [Array<Hash>] vms, Array of Hashes with values: %>
+<%# 	[String] id  %>
+<%# 	[String] name  %>
+<%# 	[String] exception  %>
+From: cesnet@mail.muni.cz
+To: <%= user_email %>
+Subject: OpenNebula VM expiration
+
+Hi <%= user_name %>,
+your vms are about to expire..
+
+VM Name | Expiration Date
+<% vms.each do |vm| %>
+	<%= vm.name %> | <%= Time.at(vm.expiration) %>
+<% end %>

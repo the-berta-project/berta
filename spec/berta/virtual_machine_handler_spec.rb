@@ -117,4 +117,47 @@ describe Berta::VirtualMachineHandler do
       end
     end
   end
+
+  describe '.default_expiration' do
+    context 'without any expiration', :vcr do
+      it 'return nil' do
+        service.running_vms.each do |vm|
+          expect(vm.default_expiration).to be_nil
+        end
+      end
+    end
+
+    context 'with only default expiration set', :vcr do
+      it 'return default expiration' do
+        service.running_vms.each do |vm|
+          expect(vm.default_expiration).not_to be_nil
+        end
+      end
+    end
+
+    context 'with valid expiration but not default one', :vcr do
+      it 'return nil' do
+        service.running_vms.each do |vm|
+          expect(vm.default_expiration).to be_nil
+        end
+      end
+    end
+
+    context 'with valid expiration and default expiration', :vcr do
+      it 'return default expiration' do
+        service.running_vms.each do |vm|
+          expect(vm.default_expiration).not_to be_nil
+          expect(vm.default_expiration.action).to eq('suspend')
+        end
+      end
+    end
+
+    context 'with invalid expiration with default action', :vcr do
+      it 'return nil' do
+        service.running_vms.each do |vm|
+          expect(vm.default_expiration).to be_nil
+        end
+      end
+    end
+  end
 end
