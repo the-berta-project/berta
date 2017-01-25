@@ -26,7 +26,7 @@ module Berta
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) }
-             .delete_if { |vmh| whitelisted?(vmh) || !running?(vmh) }
+             .delete_if { |vmh| excluded?(vmh) || !running?(vmh) }
     end
 
     # Fetch users from OpenNebula
@@ -47,34 +47,34 @@ module Berta
 
     private
 
-    def whitelisted?(vmh)
-      whitelisted_id?(vmh) ||
-        whitelisted_user?(vmh) ||
-        whitelisted_group?(vmh) ||
-        whitelisted_cluster?(vmh)
+    def excluded?(vmh)
+      excluded_id?(vmh) ||
+        excluded_user?(vmh) ||
+        excluded_group?(vmh) ||
+        excluded_cluster?(vmh)
     end
 
-    def whitelisted_id?(vmh)
-      Berta::Settings.whitelist.ids.find { |id| vmh.handle['ID'] == id } \
-        if vmh.handle['ID'] && Berta::Settings.whitelist.ids
+    def excluded_id?(vmh)
+      Berta::Settings.exclude.ids.find { |id| vmh.handle['ID'] == id } \
+        if vmh.handle['ID'] && Berta::Settings.exclude.ids
     end
 
-    def whitelisted_user?(vmh)
-      Berta::Settings.whitelist.users.find { |user| vmh.handle['UNAME'] == user } \
-        if vmh.handle['UNAME'] && Berta::Settings.whitelist.users
+    def excluded_user?(vmh)
+      Berta::Settings.exclude.users.find { |user| vmh.handle['UNAME'] == user } \
+        if vmh.handle['UNAME'] && Berta::Settings.exclude.users
     end
 
-    def whitelisted_group?(vmh)
-      Berta::Settings.whitelist.groups.find { |group| vmh.handle['GNAME'] == group } \
-        if vmh.handle['GNAME'] && Berta::Settings.whitelist.groups
+    def excluded_group?(vmh)
+      Berta::Settings.exclude.groups.find { |group| vmh.handle['GNAME'] == group } \
+        if vmh.handle['GNAME'] && Berta::Settings.exclude.groups
     end
 
-    def whitelisted_cluster?(vmh)
-      return unless Berta::Settings.whitelist.clusters
+    def excluded_cluster?(vmh)
+      return unless Berta::Settings.exclude.clusters
       vmcid = latest_cluster_id(vmh)
       vmcluster = clusters.find { |cluster| cluster['ID'] == vmcid }
       return unless vmcluster
-      Berta::Settings.whitelist.clusters.find { |name| vmcluster['NAME'] == name } \
+      Berta::Settings.exclude.clusters.find { |name| vmcluster['NAME'] == name } \
         if vmcluster['NAME']
     end
 

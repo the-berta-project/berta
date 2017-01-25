@@ -14,16 +14,16 @@ describe Berta::Service do
   end
 
   describe '.running_vms' do
-    context 'with empty whitelist', :vcr do
+    context 'with empty exclude', :vcr do
       it 'gets running vms' do
         vms = service.running_vms
         expect(vms.count).to eq(2)
       end
     end
 
-    context 'with whitelist with id', :vcr do
+    context 'with exclude with id', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['ids'] = %w(6 420)
+        Berta::Settings.exclude['ids'] = %w(6 420)
       end
 
       after(:each) do
@@ -36,9 +36,9 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with users', :vcr do
+    context 'with exclude with users', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['users'] = ['oneadmin']
+        Berta::Settings.exclude['users'] = ['oneadmin']
       end
 
       after(:each) do
@@ -51,9 +51,9 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with groups', :vcr do
+    context 'with exclude with groups', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['groups'] = ['oneadmin']
+        Berta::Settings.exclude['groups'] = ['oneadmin']
       end
 
       after(:each) do
@@ -66,9 +66,9 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with groups that doesnt exist', :vcr do
+    context 'with exclude with groups that doesnt exist', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['groups'] = ['group']
+        Berta::Settings.exclude['groups'] = ['group']
       end
 
       after(:each) do
@@ -81,9 +81,9 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with clusters', :vcr do
+    context 'with exclude with clusters', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = %w(default notsodefault)
+        Berta::Settings.exclude['clusters'] = %w(default notsodefault)
       end
 
       after(:each) do
@@ -96,9 +96,9 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with clusters that doesnt exist', :vcr do
+    context 'with exclude with clusters that doesnt exist', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = ['himum']
+        Berta::Settings.exclude['clusters'] = ['himum']
       end
 
       after(:each) do
@@ -111,12 +111,12 @@ describe Berta::Service do
       end
     end
 
-    context 'with whitelist with all set but invalid', :vcr do
+    context 'with exclude with all set but invalid', :vcr do
       before(:each) do
-        Berta::Settings.whitelist['clusters'] = ['ahojmiso']
-        Berta::Settings.whitelist['users'] = ['totoje']
-        Berta::Settings.whitelist['groups'] = ['test']
-        Berta::Settings.whitelist['ids'] = ['8']
+        Berta::Settings.exclude['clusters'] = ['ahojmiso']
+        Berta::Settings.exclude['users'] = ['totoje']
+        Berta::Settings.exclude['groups'] = ['test']
+        Berta::Settings.exclude['ids'] = ['8']
       end
 
       after(:each) do
