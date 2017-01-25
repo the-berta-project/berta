@@ -61,9 +61,19 @@ module Berta
       mail = Mail.new(email_template.render(Hash,
                                             user_email: user_email,
                                             user_name: user_name,
-                                            vms: vms))
+                                            vms: vms_data(vms)))
       mail.delivery_method :sendmail
       mail.deliver
+    end
+
+    private
+
+    def vms_data(vms)
+      vms.map do |vm|
+        { id: vm.handle['ID'],
+          name: vm.handle['NAME'],
+          expiration: vm.default_expiration.time.to_i }
+      end
     end
   end
 end

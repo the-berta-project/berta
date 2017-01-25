@@ -118,16 +118,6 @@ describe Berta::VirtualMachineHandler do
     end
   end
 
-  describe '.name' do
-    context 'with 2 vms with names', :vcr do
-      it 'return not nil names' do
-        service.running_vms.each do |vm|
-          expect(vm.name).not_to be_nil
-        end
-      end
-    end
-  end
-
   describe '.default_expiration' do
     context 'without any expiration', :vcr do
       it 'return nil' do
