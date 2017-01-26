@@ -68,7 +68,7 @@ describe Berta::ExpirationManager do
         expiration_manager.update_expirations(service.running_vms)
         service.running_vms.each do |vm|
           expect(vm.expirations.length).to eq(1)
-          expect(vm.expirations[0].action).to eq('suspend')
+          expect(vm.expirations[0].action).to eq(Berta::Settings.expiration.action)
         end
       end
     end
@@ -78,7 +78,7 @@ describe Berta::ExpirationManager do
         expiration_manager.update_expirations(service.running_vms)
         service.running_vms.each do |vm|
           expect(vm.expirations.length).to eq(1)
-          expect(vm.expirations[0].action).to eq('suspend')
+          expect(vm.expirations[0].action).to eq(Berta::Settings.expiration.action)
         end
       end
     end

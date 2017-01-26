@@ -1,0 +1,4 @@
+#!/usr/bin/env ruby
+require 'berta'
+
+Berta::CLI.start(ARGV)

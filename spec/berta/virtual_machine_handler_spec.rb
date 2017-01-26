@@ -26,7 +26,6 @@ describe Berta::VirtualMachineHandler do
       it 'gets when vm was notified' do
         service.running_vms.each do |vm|
           expect(vm.notified).not_to be_nil
-          expect(vm.notified).to eq(1_484_044_327)
         end
       end
     end
@@ -43,13 +42,13 @@ describe Berta::VirtualMachineHandler do
   describe '.add_expiration' do
     context 'vms have no expiration set', :vcr do
       it 'updates expiration date' do
+        offset = Time.now.to_i + Berta::Settings.expiration_offset
         service.running_vms.each do |vm|
-          vm.add_expiration(1_484_326_148, 'suspend')
+          vm.add_expiration(offset, Berta::Settings.expiration.action)
         end
         service.running_vms.each do |vm|
           expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ID']).to eq('0')
-          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/TIME']).to eq('1484326148')
-          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ACTION']).to eq('suspend')
+          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ACTION']).to eq(Berta::Settings.expiration.action)
         end
       end
     end
@@ -57,7 +56,7 @@ describe Berta::VirtualMachineHandler do
     context 'vms have one expiration set', :vcr do
       it 'updates expiration date' do
         service.running_vms.each do |vm|
-          vm.add_expiration(1_484_426_148, 'resume')
+          vm.add_expiration(Time.now.to_i, 'resume')
         end
         service.running_vms.each do |vm|
           expect(vm.expirations.length).to eq(2)
@@ -111,7 +110,7 @@ describe Berta::VirtualMachineHandler do
         service.running_vms.each do |vm|
           vm.update_expirations([Berta::Entities::Expiration.new(0,
                                                                  Time.now.to_i + 3600,
-                                                                 'suspend')])
+                                                                 Berta::Settings.expiration.action)])
           expect(vm.expirations.length).to eq(1)
         end
       end
@@ -147,7 +146,7 @@ describe Berta::VirtualMachineHandler do
       it 'return default expiration' do
         service.running_vms.each do |vm|
           expect(vm.default_expiration).not_to be_nil
-          expect(vm.default_expiration.action).to eq('suspend')
+          expect(vm.default_expiration.action).to eq(Berta::Settings.expiration.action)
         end
       end
     end
