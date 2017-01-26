@@ -23,7 +23,7 @@ describe Berta::Service do
 
     context 'with exclude with id', :vcr do
       before(:each) do
-        Berta::Settings.exclude['ids'] = %w(6 420)
+        Berta::Settings.exclude['ids'] = [6, 420]
       end
 
       after(:each) do

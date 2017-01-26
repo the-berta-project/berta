@@ -55,8 +55,8 @@ module Berta
     end
 
     def excluded_id?(vmh)
-      Berta::Settings.exclude.ids.find { |id| vmh.handle['ID'] == id } \
-        if vmh.handle['ID'] && Berta::Settings.exclude.ids
+      Berta::Settings.exclude.ids.find { |id| vmh.handle.id == id } \
+        if vmh.handle.id && Berta::Settings.exclude.ids
     end
 
     def excluded_user?(vmh)
@@ -79,10 +79,7 @@ module Berta
     end
 
     def latest_cluster_id(vmh)
-      cidtime = []
-      vmh.handle.each('HISTORY_RECORDS/HISTORY') \
-        { |history| cidtime << [history['CID'], history['STIME']] }
-      cidtime.max { |ct| ct[1] }[0]
+      vmh.handle['HISTORY_RECORDS/HISTORY[last()]/CID']
     end
 
     def running?(vmh)
