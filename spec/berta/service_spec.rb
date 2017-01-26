@@ -14,10 +14,118 @@ describe Berta::Service do
   end
 
   describe '.running_vms' do
-    context 'with valid response', :vcr do
+    context 'with empty exclude', :vcr do
       it 'gets running vms' do
         vms = service.running_vms
-        expect(vms.count).to eq(3)
+        expect(vms.count).to eq(2)
+      end
+    end
+
+    context 'with exclude with id', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['ids'] = [6, 420]
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 1 vm' do
+        vms = service.running_vms
+        expect(vms.count).to eq(1)
+      end
+    end
+
+    context 'with exclude with users', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['users'] = ['oneadmin']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with exclude with groups', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['groups'] = ['oneadmin']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with exclude with groups that doesnt exist', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['groups'] = ['group']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
+      end
+    end
+
+    context 'with exclude with clusters', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['clusters'] = %w(default notsodefault)
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get 0 vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(0)
+      end
+    end
+
+    context 'with exclude with clusters that doesnt exist', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['clusters'] = ['himum']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
+      end
+    end
+
+    context 'with exclude with all set but invalid', :vcr do
+      before(:each) do
+        Berta::Settings.exclude['clusters'] = ['ahojmiso']
+        Berta::Settings.exclude['users'] = ['totoje']
+        Berta::Settings.exclude['groups'] = ['test']
+        Berta::Settings.exclude['ids'] = ['8']
+      end
+
+      after(:each) do
+        Berta::Settings.reload!
+      end
+
+      it 'get all vms' do
+        vms = service.running_vms
+        expect(vms.length).to eq(2)
       end
     end
 
