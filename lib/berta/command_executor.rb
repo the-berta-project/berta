@@ -1,7 +1,7 @@
 module Berta
   # Class for executing main berta commands
   class CommandExecutor
-    def cleanup
+    def self.cleanup
       service = Berta::Service.new(Berta::Settings.opennebula.secret,
                                    Berta::Settings.opennebula.endpoint)
       vms = service.running_vms

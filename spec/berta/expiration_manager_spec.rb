@@ -63,6 +63,14 @@ describe Berta::ExpirationManager do
   end
 
   describe '.update_expirations' do
+    before(:each) do
+      Berta::Settings['expiration']['action'] = 'terminate-hard'
+    end
+
+    after(:each) do
+      Berta::Settings.reload!
+    end
+
     context 'with no expirations set on vms', :vcr do
       it 'sets default expiration to all vms' do
         expiration_manager.update_expirations(service.running_vms)

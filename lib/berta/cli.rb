@@ -3,62 +3,67 @@ require 'thor'
 module Berta
   # CLI for berta
   class CLI < Thor
+    def self.safe_fetch(keys)
+      current = Berta::Settings
+      keys.each do |key|
+        current = current[key]
+        break unless current
+      end
+      current
+    end
+
     class_option :'opennebula-secret',
-                 required: true,
-                 default: Berta::Settings['opennebula']['secret'],
+                 default: safe_fetch(%w(opennebula secret)),
                  type: :string
     class_option :'opennebula-endpoint',
-                 required: true,
-                 default: Berta::Settings['opennebula']['endpoint'],
+                 default: safe_fetch(%w(opennebula endpoint)),
                  type: :string
     class_option :'expiration-offset',
                  required: true,
-                 default: Berta::Settings['expiration']['offset'],
+                 default: safe_fetch(%w(expiration offset)),
                  type: :string
     class_option :'expiration-action',
                  required: true,
-                 default: Berta::Settings['expiration']['action'],
+                 default: safe_fetch(%w(expiration action)),
                  type: :string
     class_option :'notification-deadline',
                  required: true,
-                 default: Berta::Settings['notification']['deadline'],
+                 default: safe_fetch(%w(notification deadline)),
                  type: :string
     class_option :'exclude-ids',
-                 required: false,
-                 default: Berta::Settings['exclude']['ids'],
+                 default: safe_fetch(%w(exclude ids)),
                  type: :array
     class_option :'exclude-users',
-                 required: false,
-                 default: Berta::Settings['exclude']['users'],
+                 default: safe_fetch(%w(exclude users)),
                  type: :array
     class_option :'exclude-groups',
-                 required: false,
-                 default: Berta::Settings['exclude']['groups'],
+                 default: safe_fetch(%w(exclude groups)),
                  type: :array
     class_option :'exclude-clusters',
-                 required: false,
-                 default: Berta::Settings['exclude']['clusters'],
+                 default: safe_fetch(%w(exclude clusters)),
                  type: :array
 
-    desc 'default', 'The default task to run'
-    def default
+    desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
+    def cleanup
       initialize_configuration(options)
-      Berta::CommandExecutor.new.cleanup
+      Berta::CommandExecutor.cleanup
     end
-    default_task :default
+    default_task :cleanup
 
     private
 
     def initialize_configuration(options)
-      Berta::Settings['opennebula']['secret'] = options['opennebula-secret']
-      Berta::Settings['opennebula']['endpoint'] = options['opennebula-endpoint']
-      Berta::Settings['expiration']['offset'] = options['expiration-offset']
-      Berta::Settings['expiration']['action'] = options['expiration-action']
-      Berta::Settings['notification']['deadline'] = options['notification-deadline']
-      Berta::Settings['exclude']['ids'] = options['exclude-ids']
-      Berta::Settings['exclude']['users'] = options['exclude-users']
-      Berta::Settings['exclude']['groups'] = options['exclude-groups']
-      Berta::Settings['exclude']['clusters'] = options['exclude-clusters']
+      settings = Hash.new { |hash, key| hash[key] = {} }
+      settings['opennebula']['secret'] = options['opennebula-secret']
+      settings['opennebula']['endpoint'] = options['opennebula-endpoint']
+      settings['expiration']['offset'] = options['expiration-offset']
+      settings['expiration']['action'] = options['expiration-action']
+      settings['notification']['deadline'] = options['notification-deadline']
+      settings['exclude']['ids'] = options['exclude-ids']
+      settings['exclude']['users'] = options['exclude-users']
+      settings['exclude']['groups'] = options['exclude-groups']
+      settings['exclude']['clusters'] = options['exclude-clusters']
+      Berta::Settings.merge!(settings)
     end
   end
 end
