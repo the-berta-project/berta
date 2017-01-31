@@ -12,3 +12,4 @@ berta:
     users:            # VMs owned by this users will be ignored
     groups:           # VMs in this groups will be ignored
     clusters:         # VMs in this clusters will be ignored
+  dry-run: false

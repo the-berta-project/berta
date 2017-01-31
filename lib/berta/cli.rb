@@ -1,4 +1,5 @@
 require 'thor'
+require 'yell'
 
 module Berta
   # CLI for berta
@@ -42,6 +43,9 @@ module Berta
     class_option :'exclude-clusters',
                  default: safe_fetch(%w(exclude clusters)),
                  type: :array
+    class_option :'dry-run',
+                 default: safe_fetch(%w(dry-run)),
+                 type: :boolean
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
@@ -63,7 +67,11 @@ module Berta
       settings['exclude']['users'] = options['exclude-users']
       settings['exclude']['groups'] = options['exclude-groups']
       settings['exclude']['clusters'] = options['exclude-clusters']
+      settings['dry-run'] = options['dry-run']
       Berta::Settings.merge!(settings)
+    end
+
+    def initialize_logger(options)
     end
   end
 end

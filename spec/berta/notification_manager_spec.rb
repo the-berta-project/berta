@@ -5,6 +5,10 @@ describe Berta::NotificationManager do
   subject(:notification_manager) { Berta::NotificationManager.new(service) }
 
   describe '.uids_to_notify' do
+    before(:each) do
+      allow(Time).to receive(:now).and_return(Time.at(1_485_858_004))
+    end
+
     context 'with no vm to notify', :vcr do
       it 'return empty hash' do
         uidsvm = notification_manager.uids_to_notify(service.running_vms)

@@ -12,6 +12,10 @@ module Berta
     # @note This method modifies OpenNebula database
     # @raise [BackendError] if connection to service failed
     def update_notified
+      if Berta::Settings['dry-run']
+        puts "Setting notified flag of #{handle['ID']} to #{Time.now.to_i}"
+        return
+      end
       Berta::Utils::OpenNebula::Helper.handle_error \
         { handle.update("NOTIFIED = #{Time.now.to_i}", true) }
       handle.info
@@ -39,13 +43,17 @@ module Berta
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
     def add_expiration(time, action)
+      if Berta::Settings['dry-run']
+        puts "Setting expiration date of #{handle['ID']} to #{action} on #{time} with id #{next_sched_action_id}"
+        return
+      end
       template = \
         Berta::Entities::Expiration.new(next_sched_action_id,
                                         time,
                                         action).template
       expirations.each { |exp| template += exp.template }
       Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update(template, true) }
+        { handle.update(template, true) } 
       handle.info
     end
 
