@@ -39,6 +39,22 @@ describe Berta::VirtualMachineHandler do
     end
   end
 
+  describe '.should_notify?' do
+    before(:each) do
+      Berta::Settings['expiration']['action'] = 'suspend'
+    end
+
+    after(:each) do
+      Berta::Settings.reload!
+    end
+
+    context 'with 1vm with 2schelude action done', :vcr do
+      it 'return false' do
+        expect(service.running_vms.first.should_notify?).to be_falsey
+      end
+    end
+  end
+
   describe '.add_expiration' do
     context 'vms have no expiration set', :vcr do
       it 'updates expiration date' do

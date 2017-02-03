@@ -46,10 +46,18 @@ module Berta
     class_option :'dry-run',
                  default: safe_fetch(%w(dry-run)),
                  type: :boolean
+    class_option :'logging-file',
+                 default: safe_fetch(%w(logging file)),
+                 type: :string
+    class_option :'logging-level',
+                 required: true,
+                 default: safe_fetch(%w(logging level)),
+                 type: :string
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
       initialize_configuration(options)
+      initialize_logger(options)
       Berta::CommandExecutor.cleanup
     end
     default_task :cleanup
@@ -68,10 +76,26 @@ module Berta
       settings['exclude']['groups'] = options['exclude-groups']
       settings['exclude']['clusters'] = options['exclude-clusters']
       settings['dry-run'] = options['dry-run']
+      settings['logging']['file'] = options['logging-file']
+      settings['logging']['level'] = options['logging-level']
       Berta::Settings.merge!(settings)
     end
 
     def initialize_logger(options)
+      Yell.new :stdout, name: Object, level: options['logging-level'], format: Yell::DefaultFormat
+      Object.send :include, Yell::Loggable
+
+      setup_file_logger(options['logging-file']) if options['logging-file']
+
+      logger.debug 'Running in debug mode...'
+    end
+
+    def setup_file_logger(logging_file)
+      unless (File.exist?(logging_file) && File.writable?(logging_file)) || File.writable?(File.dirname(logging_file))
+        logger.error "File #{logging_file} isn't writable"
+        return
+      end
+      logger.adapter :file, logging_file
     end
   end
 end

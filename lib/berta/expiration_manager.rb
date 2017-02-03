@@ -19,7 +19,10 @@ module Berta
     def remove_invalid_expirations(vm)
       exps = vm.expirations
       exps.keep_if(&:in_expiration_interval?)
-      vm.update_expirations(exps)
+      vm.update_expirations(exps) if exps.length != vm.expirations.length
+    rescue Berta::Errors::BackendError => e
+      logger.error e.message
+      logger.error "\tOn vm with id #{vm.handle['ID']}"
     end
 
     # Adds default expiration if no expiration with
@@ -27,8 +30,11 @@ module Berta
     #
     # @param [VirtualMachineHandler] vm
     def add_default_expiration(vm)
-      vm.add_expiration(Time.now.to_i + Berta::Settings.expiration_offset, Berta::Settings.expiration.action) \
-        unless vm.default_expiration
+      return if vm.default_expiration
+      vm.add_expiration(Time.now.to_i + Berta::Settings.expiration_offset,
+                        Berta::Settings.expiration.action)
+    rescue Berta::Errors::BackendError => e
+      logger.error "#{e.message}\n\tOn vm with id #{vm.handle['ID']}"
     end
   end
 end
