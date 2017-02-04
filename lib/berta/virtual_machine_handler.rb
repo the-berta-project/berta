@@ -14,9 +14,10 @@ module Berta
     def update_notified
       logger.debug "Setting notified flag of #{handle['ID']} to #{Time.now.to_i}"
       return if Berta::Settings['dry-run']
-      Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update("NOTIFIED = #{Time.now.to_i}", true) }
-      handle.info
+      Berta::Utils::OpenNebula::Helper.handle_error do
+        handle.update("NOTIFIED = #{Time.now.to_i}", true)
+        handle.info
+      end
     end
 
     # @return [Numeric] Time when notified was set else nil.
@@ -59,9 +60,10 @@ module Berta
       exps.each { |exp| template += exp.template }
       logger.debug "Setting multiple expirations:\n#{template}"
       return if Berta::Settings['dry-run']
-      Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update(template, true) }
-      handle.info
+      Berta::Utils::OpenNebula::Helper.handle_error do
+        handle.update(template, true)
+        handle.info
+      end
     end
 
     # Returns array of expirations on vm

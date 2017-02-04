@@ -53,6 +53,9 @@ module Berta
                  required: true,
                  default: safe_fetch(%w(logging level)),
                  type: :string
+    class_option :debug,
+                 default: safe_fetch(%w(debug)),
+                 type: :boolean
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
@@ -76,13 +79,17 @@ module Berta
       settings['exclude']['groups'] = options['exclude-groups']
       settings['exclude']['clusters'] = options['exclude-clusters']
       settings['dry-run'] = options['dry-run']
+      settings['debug'] = options['debug']
       settings['logging']['file'] = options['logging-file']
       settings['logging']['level'] = options['logging-level']
       Berta::Settings.merge!(settings)
     end
 
     def initialize_logger(options)
-      Yell.new :stdout, name: Object, level: options['logging-level'], format: Yell::DefaultFormat
+      logging_level = options['logging-level']
+      logging_level = 'debug' if options['debug'] || options['dry-run']
+
+      Yell.new :stdout, name: Object, level: logging_level, format: Yell::DefaultFormat
       Object.send :include, Yell::Loggable
 
       setup_file_logger(options['logging-file']) if options['logging-file']

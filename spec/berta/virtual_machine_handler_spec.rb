@@ -134,6 +134,10 @@ describe Berta::VirtualMachineHandler do
   end
 
   describe '.default_expiration' do
+    before(:each) do
+      allow(Time).to receive(:now).and_return(Time.at(1_485_858_004))
+    end
+
     context 'without any expiration', :vcr do
       it 'return nil' do
         service.running_vms.each do |vm|

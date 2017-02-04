@@ -21,8 +21,7 @@ module Berta
       exps.keep_if(&:in_expiration_interval?)
       vm.update_expirations(exps) if exps.length != vm.expirations.length
     rescue Berta::Errors::BackendError => e
-      logger.error e.message
-      logger.error "\tOn vm with id #{vm.handle['ID']}"
+      logger.error "#{e.message}\n\tOn vm with id #{vm.handle['ID']}"
     end
 
     # Adds default expiration if no expiration with
