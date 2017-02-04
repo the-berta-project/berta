@@ -42,11 +42,13 @@ module Berta
       end
 
       def in_notification_interval?
-        time.to_i - Time.now.to_i <= Berta::Settings.notification_deadline
+        time_interval = time.to_i - Time.now.to_i
+        time_interval <= Berta::Settings.notification_deadline && time_interval >= 0
       end
 
       def in_expiration_interval?
-        time.to_i - Time.now.to_i <= Berta::Settings.expiration_offset
+        time_interval = time.to_i - Time.now.to_i
+        time_interval <= Berta::Settings.expiration_offset && time_interval >= 0
       end
 
       def default_action?

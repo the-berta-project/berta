@@ -12,9 +12,12 @@ module Berta
     # @note This method modifies OpenNebula database
     # @raise [BackendError] if connection to service failed
     def update_notified
-      Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update("NOTIFIED = #{Time.now.to_i}", true) }
-      handle.info
+      logger.debug "Setting notified flag of #{handle['ID']} to #{Time.now.to_i}"
+      return if Berta::Settings['dry-run']
+      Berta::Utils::OpenNebula::Helper.handle_error do
+        handle.update("NOTIFIED = #{Time.now.to_i}", true)
+        handle.info
+      end
     end
 
     # @return [Numeric] Time when notified was set else nil.
@@ -39,14 +42,13 @@ module Berta
     # @param [Numeric] Time when to notify user
     # @param [String] Action to perform on given time
     def add_expiration(time, action)
-      template = \
+      logger.debug "Setting expiration date of #{handle['ID']} to #{action} on #{time} with id #{next_sched_action_id}"
+      return if Berta::Settings['dry-run']
+      new_expiration = \
         Berta::Entities::Expiration.new(next_sched_action_id,
                                         time,
-                                        action).template
-      expirations.each { |exp| template += exp.template }
-      Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update(template, true) }
-      handle.info
+                                        action)
+      update_expirations(expirations << new_expiration)
     end
 
     # Sets array of expirations to vm, rewrites all old ones.
@@ -56,9 +58,12 @@ module Berta
     def update_expirations(exps)
       template = ''
       exps.each { |exp| template += exp.template }
-      Berta::Utils::OpenNebula::Helper.handle_error \
-        { handle.update(template, true) }
-      handle.info
+      logger.debug "Setting multiple expirations:\n#{template}"
+      return if Berta::Settings['dry-run']
+      Berta::Utils::OpenNebula::Helper.handle_error do
+        handle.update(template, true)
+        handle.info
+      end
     end
 
     # Returns array of expirations on vm

@@ -24,19 +24,27 @@ module Berta
     # @param [Array<VirtualMachineHandler>] Virtual machines
     #   to check for notifications.
     def notify_users(vms)
-      users = service.users
+      begin
+        users = service.users
+      rescue Berta::Errors::BackendError => e
+        logger.error e.message
+        return
+      end
       uids_to_notify(vms).each do |uid, uvms|
         user = users.find { |usr| usr['ID'] == uid }
-        next unless user
-        begin
-          send_notification(user, uvms)
-        rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
-          puts e.message
-          # log here
-        else
-          uvms.each(&:update_notified)
-        end
+        notify_user(user, uvms) if user
       end
+    end
+
+    # @param [OpenNebula::User] user to notify
+    # @param [Array<VirtualMachineHandler>] vms to notify about
+    def notify_user(user, user_vms)
+      send_notification(user, user_vms)
+    rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
+      logger.error e.message
+      logger.error "for user #{user} with id #{uid}"
+    else
+      user_vms.each(&:update_notified)
     end
 
     # @param [Array<VirtualMachineHandler>]

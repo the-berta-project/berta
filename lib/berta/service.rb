@@ -23,6 +23,7 @@ module Berta
     #   running on OpenNebula
     # @raise [Berta::BackendError] if connection to OpenNebula failed
     def running_vms
+      logger.debug 'Fetching vms'
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) }
@@ -34,12 +35,14 @@ module Berta
     # @return [OpenNebula::UserPool] users on OpenNebula
     # @raise [Berta::BackendError] if connection failed
     def users
+      logger.debug 'Fetching users'
       user_pool = OpenNebula::UserPool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { user_pool.info }
       user_pool
     end
 
     def clusters
+      logger.debug 'Fetching clusters'
       cluster_pool = OpenNebula::ClusterPool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { cluster_pool.info }
       cluster_pool
