@@ -4,7 +4,8 @@ module Berta
   # Berta service for communication with OpenNebula
   class Service
     RESOURCE_STATES = %w(SUSPENDED POWEROFF CLONING).freeze
-    RESOURCE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
+    NON_RESOURCE_ACTIVE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
+    ACTIVE_STATE = 'ACTIVE'.freeze
 
     attr_reader :endpoint
     attr_reader :client
@@ -88,8 +89,8 @@ module Berta
 
     def takes_resources?(vmh)
       return true if RESOURCE_STATES.any? { |state| vmh.handle.state_str == state }
-      return true if vmh.handle.state_str == 'ACTIVE' &&
-                     RESOURCE_LCM_STATES.none? { |state| vmh.handle.lcm_state_str.include? state }
+      return true if vmh.handle.state_str == ACTIVE_STATE &&
+                     NON_RESOURCE_ACTIVE_LCM_STATES.none? { |state| vmh.handle.lcm_state_str.include? state }
     end
   end
 end
