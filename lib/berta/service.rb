@@ -3,7 +3,9 @@ require 'opennebula'
 module Berta
   # Berta service for communication with OpenNebula
   class Service
-    ACTIVE = 3
+    RESOURCE_STATES = %w(SUSPENDED POWEROFF CLONING).freeze
+    NON_RESOURCE_ACTIVE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
+    ACTIVE_STATE = 'ACTIVE'.freeze
 
     attr_reader :endpoint
     attr_reader :client
@@ -27,7 +29,7 @@ module Berta
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) }
-             .delete_if { |vmh| excluded?(vmh) || !running?(vmh) }
+             .delete_if { |vmh| excluded?(vmh) || !takes_resources?(vmh) }
     end
 
     # Fetch users from OpenNebula
@@ -85,8 +87,10 @@ module Berta
       vmh.handle['HISTORY_RECORDS/HISTORY[last()]/CID']
     end
 
-    def running?(vmh)
-      vmh.handle.state == ACTIVE
+    def takes_resources?(vmh)
+      return true if RESOURCE_STATES.any? { |state| vmh.handle.state_str == state }
+      return true if vmh.handle.state_str == ACTIVE_STATE &&
+                     NON_RESOURCE_ACTIVE_LCM_STATES.none? { |state| vmh.handle.lcm_state_str.include? state }
     end
   end
 end

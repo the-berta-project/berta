@@ -129,6 +129,37 @@ describe Berta::Service do
       end
     end
 
+    context 'with all vms in PENDING state', :vcr do
+      it 'will filter out all vms' do
+        vms = service.running_vms
+        expect(vms).to be_empty
+      end
+    end
+
+    context 'with 1 vm in ACTIVE state and RUNNING lcm state', :vcr do
+      it 'will keep all vms' do
+        vms = service.running_vms
+        expect(vms).not_to be_empty
+        expect(vms.length).to eq(1)
+      end
+    end
+
+    context 'with 1 vm in SUSPENDED state', :vcr do
+      it 'will keep all vms' do
+        vms = service.running_vms
+        expect(vms).not_to be_empty
+        expect(vms.length).to eq(1)
+      end
+    end
+
+    context 'with 1 vm in SHUTDOWN state', :vcr do
+      it 'will filter out all vms' do
+        vms = service.running_vms
+        expect(vms).not_to be_empty
+        expect(vms.length).to eq(1)
+      end
+    end
+
     context 'with wrong secret', :vcr do
       let(:wrong_service) { Berta::Service.new('ahoj:miso', 'http://localhost:2633/RPC2') }
 

@@ -24,6 +24,10 @@ describe Berta::NotificationManager do
     end
 
     context 'with 1 vm to notify 1 user', :vcr do
+      before(:each) do
+        allow(Time).to receive(:now).and_return(Time.at(1_486_809_255))
+      end
+
       it 'return hash with 1uid with 1vm hash' do
         uidsvm = notification_manager.uids_to_notify(service.running_vms)
         expect(uidsvm.length).to eq(1)
