@@ -155,7 +155,8 @@ describe Berta::Service do
     context 'with 1 vm in SHUTDOWN state', :vcr do
       it 'will filter out all vms' do
         vms = service.running_vms
-        expect(vms).to be_empty
+        expect(vms).not_to be_empty
+        expect(vms.length).to eq(1)
       end
     end
 
