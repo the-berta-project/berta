@@ -10,20 +10,27 @@ module Berta
     attr_reader :endpoint
     attr_reader :client
 
-    # Initializes service object
+    # Initializes service object and connects to opennebula
+    #   backend. If both arguments are nil default ONE_AUTH
+    #   will be used.
     #
-    # @param secret [String] opennebula secret
-    # @param endpoint [String] endpoint of OpenNebula
+    # @param secret [String] Opennebula secret
+    # @param endpoint [String] Endpoint of OpenNebula
     def initialize(secret, endpoint)
       @endpoint = endpoint
       @client = OpenNebula::Client.new(secret, endpoint)
     end
 
-    # Fetch running vms from OpenNebula
+    # Fetch running vms from OpenNebula and filter out vms that
+    #   take no resources.
     #
-    # @return [Berta::VirtualMachineHandler] virtual machines
+    # @return [Berta::VirtualMachineHandler] Virtual machines
     #   running on OpenNebula
-    # @raise [Berta::BackendError] if connection to OpenNebula failed
+    # @raise [Berta::Errors::OpenNebula::AuthenticationError]
+    # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
+    # @raise [Berta::Errors::OpenNebula::ResourceNotFoundError]
+    # @raise [Berta::Errors::OpenNebula::ResourceStateError]
+    # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def running_vms
       logger.debug 'Fetching vms'
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
@@ -34,8 +41,12 @@ module Berta
 
     # Fetch users from OpenNebula
     #
-    # @return [OpenNebula::UserPool] users on OpenNebula
-    # @raise [Berta::BackendError] if connection failed
+    # @return [OpenNebula::UserPool] Users on OpenNebula
+    # @raise [Berta::Errors::OpenNebula::AuthenticationError]
+    # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
+    # @raise [Berta::Errors::OpenNebula::ResourceNotFoundError]
+    # @raise [Berta::Errors::OpenNebula::ResourceStateError]
+    # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def users
       logger.debug 'Fetching users'
       user_pool = OpenNebula::UserPool.new(client)
@@ -43,6 +54,14 @@ module Berta
       user_pool
     end
 
+    # Fetch clusters from OpenNebula
+    #
+    # @return [OpenNebula::ClusterPool] Clusters on OpenNebula
+    # @raise [Berta::Errors::OpenNebula::AuthenticationError]
+    # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
+    # @raise [Berta::Errors::OpenNebula::ResourceNotFoundError]
+    # @raise [Berta::Errors::OpenNebula::ResourceStateError]
+    # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def clusters
       logger.debug 'Fetching clusters'
       cluster_pool = OpenNebula::ClusterPool.new(client)
