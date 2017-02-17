@@ -5,6 +5,10 @@ describe Berta::ExpirationManager do
   subject(:expiration_manager) { Berta::ExpirationManager.new }
 
   describe '.add_default_expiration' do
+    before(:each) do
+      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
+    end
+
     context 'with no expiration date on vms', :vcr do
       it 'sets default expiration to all vms' do
         service.running_vms.each \
@@ -65,6 +69,7 @@ describe Berta::ExpirationManager do
   describe '.update_expirations' do
     before(:each) do
       Berta::Settings['expiration']['action'] = 'terminate-hard'
+      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
     end
 
     after(:each) do
