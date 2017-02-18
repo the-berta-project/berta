@@ -1,7 +1,7 @@
 module Berta
   module Errors
     module Entities
-      class NoUserEmailError < StandardError; end
+      class NoUserEmailError < Berta::Errors::StandardError; end
     end
   end
 end
