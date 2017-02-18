@@ -1,7 +1,7 @@
 require 'spec_helper'
 
 describe Berta::Service do
-  subject(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
+  subject(:service) { described_class.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
 
   describe '#new' do
     it 'returns instace of Service with given data' do
@@ -22,11 +22,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with id', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['ids'] = [6, 420]
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -37,11 +37,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with users', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['users'] = ['oneadmin']
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -52,11 +52,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with groups', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['groups'] = ['oneadmin']
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -67,11 +67,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with groups that doesnt exist', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['groups'] = ['group']
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -82,11 +82,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with clusters', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['clusters'] = %w(default notsodefault)
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -97,11 +97,11 @@ describe Berta::Service do
     end
 
     context 'with exclude with clusters that doesnt exist', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['clusters'] = ['himum']
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -112,14 +112,14 @@ describe Berta::Service do
     end
 
     context 'with exclude with all set but invalid', :vcr do
-      before(:each) do
+      before do
         Berta::Settings.exclude['clusters'] = ['ahojmiso']
         Berta::Settings.exclude['users'] = ['totoje']
         Berta::Settings.exclude['groups'] = ['test']
         Berta::Settings.exclude['ids'] = ['8']
       end
 
-      after(:each) do
+      after do
         Berta::Settings.reload!
       end
 
@@ -161,7 +161,7 @@ describe Berta::Service do
     end
 
     context 'with wrong secret', :vcr do
-      let(:wrong_service) { Berta::Service.new('ahoj:miso', 'http://localhost:2633/RPC2') }
+      let(:wrong_service) { described_class.new('ahoj:miso', 'http://localhost:2633/RPC2') }
 
       it 'raises authentication error' do
         expect { wrong_service.running_vms }.to raise_error Berta::Errors::OpenNebula::AuthenticationError
@@ -169,7 +169,7 @@ describe Berta::Service do
     end
 
     context 'with wrong endpoint', :vcr do
-      let(:wrong_service) { Berta::Service.new('oneadmin:opennebula', 'http://remotehost:2633/RPC2') }
+      let(:wrong_service) { described_class.new('oneadmin:opennebula', 'http://remotehost:2633/RPC2') }
 
       it 'raises resource retrieval error' do
         expect { wrong_service.running_vms }.to raise_error Berta::Errors::OpenNebula::ResourceRetrievalError

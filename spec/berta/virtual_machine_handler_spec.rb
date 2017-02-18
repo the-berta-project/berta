@@ -40,11 +40,11 @@ describe Berta::VirtualMachineHandler do
   end
 
   describe '.should_notify?' do
-    before(:each) do
+    before do
       Berta::Settings['expiration']['action'] = 'suspend'
     end
 
-    after(:each) do
+    after do
       Berta::Settings.reload!
     end
 
@@ -134,7 +134,7 @@ describe Berta::VirtualMachineHandler do
   end
 
   describe '.default_expiration' do
-    before(:each) do
+    before do
       allow(Time).to receive(:now).and_return(Time.at(1_485_858_004))
     end
 

@@ -1,11 +1,11 @@
 require 'spec_helper'
 
 describe Berta::NotificationManager do
+  subject(:notification_manager) { described_class.new(service) }
   let(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
-  subject(:notification_manager) { Berta::NotificationManager.new(service) }
 
   describe '.uids_to_notify' do
-    before(:each) do
+    before do
       allow(Time).to receive(:now).and_return(Time.at(1_485_858_004))
     end
 
@@ -24,7 +24,7 @@ describe Berta::NotificationManager do
     end
 
     context 'with 1 vm to notify 1 user', :vcr do
-      before(:each) do
+      before do
         allow(Time).to receive(:now).and_return(Time.at(1_486_809_255))
       end
 
@@ -45,7 +45,7 @@ describe Berta::NotificationManager do
   end
 
   describe '.notify_users' do
-    before(:each) do
+    before do
       Mail::TestMailer.deliveries.clear
     end
 

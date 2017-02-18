@@ -1,10 +1,14 @@
 require 'spec_helper'
 
 describe Berta::ExpirationManager do
+  subject(:expiration_manager) { described_class.new }
   let(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
-  subject(:expiration_manager) { Berta::ExpirationManager.new }
 
   describe '.add_default_expiration' do
+    before do
+      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
+    end
+
     context 'with no expiration date on vms', :vcr do
       it 'sets default expiration to all vms' do
         service.running_vms.each \
@@ -63,11 +67,12 @@ describe Berta::ExpirationManager do
   end
 
   describe '.update_expirations' do
-    before(:each) do
+    before do
       Berta::Settings['expiration']['action'] = 'terminate-hard'
+      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
     end
 
-    after(:each) do
+    after do
       Berta::Settings.reload!
     end
 
