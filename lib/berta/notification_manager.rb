@@ -42,7 +42,6 @@ module Berta
       send_notification(user, user_vms)
     rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
       logger.error e.message
-      logger.error "for user #{user} with id #{uid}"
     else
       user_vms.each(&:update_notified)
     end
@@ -64,7 +63,7 @@ module Berta
     def send_notification(user, vms)
       user_email = user['TEMPLATE/EMAIL']
       user_name = user['NAME']
-      raise Berta::Errors::Entities::NoUserEmailError "User: #{user_name} has no email set" \
+      raise Berta::Errors::Entities::NoUserEmailError, "User: #{user_name} with id: #{user['ID']} has no email set" \
         unless user_email
       mail = Mail.new(email_template.render(Hash,
                                             user_email: user_email,
