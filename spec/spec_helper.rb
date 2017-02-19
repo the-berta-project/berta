@@ -3,6 +3,10 @@ require 'webmock/rspec'
 require 'vcr'
 require 'mail'
 require 'yell'
+require 'settingslogic'
+require 'coveralls'
+
+Coveralls.wear!
 
 WebMock.disable_net_connect!(allow_localhost: true)
 
