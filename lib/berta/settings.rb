@@ -16,10 +16,20 @@ module Berta
 
     namespace 'berta'
 
+    # Notification deadline can be written in settings file in human
+    # readable form. This function will return notification deadline
+    # value as integer.
+    #
+    # @return [Numeric] Notification deadline
     def self.notification_deadline
       ChronicDuration.parse(get('notification.deadline'))
     end
 
+    # Expiration offset can be written in settings file in human
+    # readable form. This function will return expiration offset
+    # value as integer.
+    #
+    # @return [Numeric] Expiration offset
     def self.expiration_offset
       ChronicDuration.parse(get('expiration.offset'))
     end

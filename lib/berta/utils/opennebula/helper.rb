@@ -6,6 +6,7 @@ module Berta
       # Class designed to help with working with OpenNebula
       class Helper
         class << self
+          # Hash of errors that can be returned by opennebula
           ERRORS = Hash.new(Berta::Errors::OpenNebula::ResourceRetrievalError)
                        .update(::OpenNebula::Error::EAUTHENTICATION => Berta::Errors::OpenNebula::AuthenticationError,
                                ::OpenNebula::Error::EAUTHORIZATION => Berta::Errors::OpenNebula::UserNotAuthorizedError,
@@ -30,7 +31,7 @@ module Berta
 
           # Decodes OpenNebula error codes into exceptions and returns them
           #
-          # @param [OpenNebula::Error] error code to turn into exception
+          # @param errno [OpenNebula::Error] Error code to turn into exception
           # @return [Berta::Errors::OpenNebula::AuthenticationError]
           # @return [Berta::Errors::OpenNebula::UserNotAuthorizedError]
           # @return [Berta::Errors::OpenNebula::ResourceNotFoundError]

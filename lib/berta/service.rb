@@ -3,16 +3,19 @@ require 'opennebula'
 module Berta
   # Berta service for communication with OpenNebula
   class Service
+    # VM states that take resources
     RESOURCE_STATES = %w(SUSPENDED POWEROFF CLONING).freeze
-    NON_RESOURCE_ACTIVE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
+    # Active state has some lcm states that should not expire
     ACTIVE_STATE = 'ACTIVE'.freeze
+    # LCM states in which active state shouldn't expire
+    NON_RESOURCE_ACTIVE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
 
     attr_reader :endpoint
     attr_reader :client
 
     # Initializes service object and connects to opennebula
-    #   backend. If both arguments are nil default ONE_AUTH
-    #   will be used.
+    # backend. If both arguments are nil default ONE_AUTH
+    # will be used.
     #
     # @param secret [String] Opennebula secret
     # @param endpoint [String] Endpoint of OpenNebula
@@ -22,7 +25,7 @@ module Berta
     end
 
     # Fetch running vms from OpenNebula and filter out vms that
-    #   take no resources.
+    # take no resources.
     #
     # @return [Berta::VirtualMachineHandler] Virtual machines
     #   running on OpenNebula

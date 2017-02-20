@@ -1,6 +1,10 @@
 module Berta
   # Class for executing main berta commands
   class CommandExecutor
+    # Function that performs clean up operation.
+    # Connects to opennebula database,
+    # runs expiration update process and
+    # notifies users about upcoming expirations.
     def self.cleanup
       service = Berta::Service.new(Berta::Settings['opennebula']['secret'],
                                    Berta::Settings['opennebula']['endpoint'])

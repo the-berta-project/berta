@@ -7,6 +7,13 @@ module Berta
   class NotificationManager
     attr_reader :service, :email_template
 
+    # Creates NotificationManager object with given service.
+    # Notification manager needs service for fetching user
+    # data from opennebula database. Also initializes
+    # email template object.
+    #
+    # @param service [Berta::Service] Service that will be used
+    #   for fetching data.
     def initialize(service)
       @service = service
       email_file = 'email.erb'.freeze
@@ -19,9 +26,10 @@ module Berta
     end
 
     # Notifies users. Finds all users that should be notified
-    #   and sends email to each of them.
+    # and sends email to each of them. Email is generated
+    # from template.
     #
-    # @param [Array<VirtualMachineHandler>] Virtual machines
+    # @param vms [Array<Berta::VirtualMachineHandler>] Virtual machines
     #   to check for notifications.
     def notify_users(vms)
       begin
@@ -36,8 +44,10 @@ module Berta
       end
     end
 
-    # @param [OpenNebula::User] user to notify
-    # @param [Array<VirtualMachineHandler>] vms to notify about
+    # Notifies given user about given vms.
+    #
+    # @param user [OpenNebula::User] User to notify
+    # @param user_vms [Array<Berta::VirtualMachineHandler>] VMs to notify about
     def notify_user(user, user_vms)
       send_notification(user, user_vms)
     rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
@@ -46,8 +56,11 @@ module Berta
       user_vms.each(&:update_notified)
     end
 
-    # @param [Array<VirtualMachineHandler>]
-    # @return [Hash<String, Array<VirtualMachineHandler>>]
+    # Finds and return uids of users from vms that should be notified.
+    #
+    # @param vms [Array<VirtualMachineHandler>] VMs to check for notification
+    # @return [Hash<String, Array<VirtualMachineHandler>>] Hash of user ids to
+    #   vms that user with key id should be notified about
     def uids_to_notify(vms)
       notif = vms.keep_if(&:should_notify?)
       uidsvm = Hash.new([])
@@ -55,11 +68,12 @@ module Berta
       uidsvm
     end
 
-    # Sends email to given user about given vms and sets notified
-    #   to all given vms.
+    # Sends email to given user about given vms using sendmail. Email
+    # is generated from email template.
     #
-    # @param [OpenNebula::User] user to notify
-    # @param [Array<VirtualMachineHandler>] vms to notify about
+    # @param user [OpenNebula::User] User to notify
+    # @param vms [Array<Berta::VirtualMachineHandler>] VMs to notify user about
+    # @raise [Berta::Errors::Entities::NoUserEmailError] If user has no email set
     def send_notification(user, vms)
       user_email = user['TEMPLATE/EMAIL']
       user_name = user['NAME']

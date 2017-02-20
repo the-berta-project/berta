@@ -3,14 +3,24 @@ module Berta
   class VirtualMachineHandler
     attr_reader :handle
 
+    # Constructs Virtual machine handler from given vm.
+    #
+    # @param vm [Berta::VirtualMachineHandler] VM that will
+    #   this handler use.
     def initialize(vm)
       @handle = vm
     end
 
-    # Sets notified into USER_TEMPLATE on virtual machine
+    # Sets NOTIFIED value in USER_TEMPLATE to current time
+    # as integer. After updating notified value
+    # fetches data from opennebula database.
     #
     # @note This method modifies OpenNebula database
-    # @raise [BackendError] if connection to service failed
+    # @raise [Berta::Errors::OpenNebula::AuthenticationError]
+    # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
+    # @raise [Berta::Errors::OpenNebula::ResourceNotFoundError]
+    # @raise [Berta::Errors::OpenNebula::ResourceStateError]
+    # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def update_notified
       logger.debug "Setting notified flag of #{handle['ID']} to #{Time.now.to_i}"
       return if Berta::Settings['dry-run']
@@ -20,6 +30,9 @@ module Berta
       end
     end
 
+    # Return NOTIFIED value from USER_TEMPLATE if it is set
+    # else nil.
+    #
     # @return [Numeric] Time when notified was set else nil.
     #   Time is in UNIX epoch time format.
     def notified
@@ -27,7 +40,13 @@ module Berta
       time.to_i if time
     end
 
-    # @return [Boolean] If this vm should be notified
+    # Determines if VM meets criteria to be notified.
+    # To be notified, VM musn't be notified and
+    # must have expiration with valid expiration
+    # action in notification interval.
+    #
+    # @return [Boolean] If this vm should be notified.
+    #   True if vm should be notified else false.
     def should_notify?
       return false if notified
       expiration = default_expiration
@@ -36,11 +55,12 @@ module Berta
     end
 
     # Adds schelude action to virtual machine. This command
-    #   modifies USER_TEMPLATE of virtual machine. But does
-    #   not delete old variables is USER_TEMPLATE.
+    # modifies USER_TEMPLATE of virtual machine. But does
+    # not delete old variables is USER_TEMPLATE.
     #
-    # @param [Numeric] Time when to notify user
-    # @param [String] Action to perform on given time
+    # @note This method modifies OpenNebula database
+    # @param time [Numeric] Time when to notify user
+    # @param action [String] Action to perform on expiration
     def add_expiration(time, action)
       logger.debug "Setting expiration date of #{handle['ID']} to #{action} on #{time} with id #{next_sched_action_id}"
       return if Berta::Settings['dry-run']
@@ -52,9 +72,10 @@ module Berta
     end
 
     # Sets array of expirations to vm, rewrites all old ones.
-    #   Receiving empty array wont change anything.
+    # Receiving empty array wont change anything.
     #
-    # @param [Array<Expiration>] Expirations to use
+    # @note This method modifies OpenNebula database
+    # @param exps [Array<Berta::Entities::Expiration>] Expirations to use
     def update_expirations(exps)
       template = ''
       exps.each { |exp| template += exp.template }
@@ -66,9 +87,10 @@ module Berta
       end
     end
 
-    # Returns array of expirations on vm
+    # Returns array of expirations on vm. Expirations are
+    # classes from USER_TEMPLATE/SCHED_ACTION.
     #
-    # @return [Array<Expiration>] All expirations on vm
+    # @return [Array<Berta::Entities::Expiration>] All expirations on vm
     def expirations
       exps = []
       handle.each('USER_TEMPLATE/SCHED_ACTION') \
@@ -77,10 +99,10 @@ module Berta
     end
 
     # Return default expiration, that means expiration with
-    #   default expiration action that is in expiration offset interval
-    #   and is closes to current date
+    # default expiration action that is in expiration offset interval
+    # and is closes to current date.
     #
-    # @return [Expiration] nearest default expiration
+    # @return [Berta::Entities::Expiration] Nearest default expiration else nil
     def default_expiration
       expirations
         .find_all { |exp| exp.default_action? && exp.in_expiration_interval? }
