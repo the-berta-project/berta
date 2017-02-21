@@ -5,6 +5,7 @@
 [![Code Climate](https://codeclimate.com/github/dudoslav/berta/badges/gpa.svg)](https://codeclimate.com/github/dudoslav/berta)
 [![Inline docs](http://inch-ci.org/github/dudoslav/berta.svg?branch=master)](http://inch-ci.org/github/dudoslav/berta)
 [![Dependency Status](https://gemnasium.com/badges/github.com/dudoslav/berta.svg)](https://gemnasium.com/github.com/dudoslav/berta)
+[![Gem Version](https://badge.fury.io/rb/berta.svg)](https://badge.fury.io/rb/berta)
 
 Berta cleans cloud from unused vms. She sets expiration to all virtual machines
 and when expiration is close she will notify owners. Berta is developed as ruby gem.
@@ -23,7 +24,7 @@ From source:
 
 ```bash
 git clone git://github.com/dudoslav/berta.git
-cd cloudkeeper
+cd berta
 gem install bundler
 bundle install
 ```
