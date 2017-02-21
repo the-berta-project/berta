@@ -34,7 +34,7 @@ bundle install
 Config files can be located in:
 * `~/.berta/berta.yml`
 * `/etc/berta/berta.yml`
-* `PATH_TO_GEM_DIR/config/cloudkeeper.yml`
+* `PATH_TO_GEM_DIR/config/berta.yml`
 
 ### Execution
 
