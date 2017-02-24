@@ -1,6 +1,8 @@
 module Berta
   # Class for Berta operations on virtual machines
   class VirtualMachineHandler
+    NOTIFIED_FLAG = 'BERTA_NOTIFIED'.freeze
+
     attr_reader :handle
 
     # Constructs Virtual machine handler from given vm.
@@ -22,10 +24,11 @@ module Berta
     # @raise [Berta::Errors::OpenNebula::ResourceStateError]
     # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def update_notified
-      logger.debug "Setting notified flag of #{handle['ID']} to #{Time.now.to_i}"
+      notify_time = Time.now
+      logger.debug "Setting notified flag of VM with id #{handle['ID']} to #{notify_time}"
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
-        handle.update("NOTIFIED = #{Time.now.to_i}", true)
+        handle.update("#{NOTIFIED_FLAG} = #{notify_time.to_i}", true)
         handle.info
       end
     end
@@ -36,7 +39,7 @@ module Berta
     # @return [Numeric] Time when notified was set else nil.
     #   Time is in UNIX epoch time format.
     def notified
-      time = handle['USER_TEMPLATE/NOTIFIED']
+      time = handle["USER_TEMPLATE/#{NOTIFIED_FLAG}"]
       time.to_i if time
     end
 
@@ -54,7 +57,7 @@ module Berta
       expiration.in_notification_interval?
     end
 
-    # Adds schelude action to virtual machine. This command
+    # Adds schedule action to virtual machine. This command
     # modifies USER_TEMPLATE of virtual machine. But does
     # not delete old variables is USER_TEMPLATE.
     #
@@ -62,7 +65,7 @@ module Berta
     # @param time [Numeric] Time when to notify user
     # @param action [String] Action to perform on expiration
     def add_expiration(time, action)
-      logger.debug "Setting expiration date of #{handle['ID']} to #{action} on #{time} with id #{next_sched_action_id}"
+      logger.debug "Setting expiration of VM with id #{handle['ID']} to #{action} on #{Time.at(time)} with id #{next_sched_action_id}"
       return if Berta::Settings['dry-run']
       new_expiration = \
         Berta::Entities::Expiration.new(next_sched_action_id,
@@ -79,6 +82,7 @@ module Berta
     def update_expirations(exps)
       template = ''
       exps.each { |exp| template += exp.template }
+      return if template == ''
       logger.debug "Setting multiple expirations:\n#{template}"
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
