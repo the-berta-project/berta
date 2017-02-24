@@ -57,23 +57,6 @@ module Berta
       expiration.in_notification_interval?
     end
 
-    # Adds schedule action to virtual machine. This command
-    # modifies USER_TEMPLATE of virtual machine. But does
-    # not delete old variables is USER_TEMPLATE.
-    #
-    # @note This method modifies OpenNebula database
-    # @param time [Numeric] Time when to notify user
-    # @param action [String] Action to perform on expiration
-    def add_expiration(time, action)
-      logger.debug "Setting expiration of VM with id #{handle['ID']} to #{action} on #{Time.at(time)} with id #{next_sched_action_id}"
-      return if Berta::Settings['dry-run']
-      new_expiration = \
-        Berta::Entities::Expiration.new(next_sched_action_id,
-                                        time,
-                                        action)
-      update_expirations(expirations << new_expiration)
-    end
-
     # Sets array of expirations to vm, rewrites all old ones.
     # Receiving empty array wont change anything.
     #
@@ -113,9 +96,8 @@ module Berta
         .min { |exp| exp.time.to_i }
     end
 
-    private
-
-    def next_sched_action_id
+    # TODO
+    def next_expiration_id
       elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
       return 0 unless elems
       elems.to_a.max.to_i + 1
