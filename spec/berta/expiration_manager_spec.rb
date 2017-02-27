@@ -6,7 +6,7 @@ describe Berta::ExpirationManager do
 
   describe '.add_default_expiration' do
     before do
-      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
+      allow(Time).to receive(:now).and_return(Time.at(1_488_186_041))
     end
 
     context 'with no expiration date on vms', :vcr do
