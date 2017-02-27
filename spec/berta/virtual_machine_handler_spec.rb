@@ -55,32 +55,6 @@ describe Berta::VirtualMachineHandler do
     end
   end
 
-  describe '.add_expiration' do
-    context 'vms have no expiration set', :vcr do
-      it 'updates expiration date' do
-        offset = Time.now.to_i + Berta::Settings.expiration_offset
-        service.running_vms.each do |vm|
-          vm.add_expiration(offset, Berta::Settings.expiration.action)
-        end
-        service.running_vms.each do |vm|
-          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ID']).to eq('0')
-          expect(vm.handle['USER_TEMPLATE/SCHED_ACTION/ACTION']).to eq(Berta::Settings.expiration.action)
-        end
-      end
-    end
-
-    context 'vms have one expiration set', :vcr do
-      it 'updates expiration date' do
-        service.running_vms.each do |vm|
-          vm.add_expiration(Time.now.to_i, 'resume')
-        end
-        service.running_vms.each do |vm|
-          expect(vm.expirations.length).to eq(2)
-        end
-      end
-    end
-  end
-
   describe '.expirations' do
     context 'with vms with only 1 expiration date', :vcr do
       it 'returns array of expirations' do

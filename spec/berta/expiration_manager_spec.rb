@@ -12,27 +12,21 @@ describe Berta::ExpirationManager do
     context 'with no expiration date on vms', :vcr do
       it 'sets default expiration to all vms' do
         service.running_vms.each \
-          { |vm| expiration_manager.add_default_expiration(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(1) }
+          { |vm| expect(expiration_manager.add_default_expiration(vm, vm.expirations).length).to eq(1) }
       end
     end
 
     context 'with good expiration date on vms', :vcr do
       it 'does nothing' do
         service.running_vms.each \
-          { |vm| expiration_manager.add_default_expiration(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(1) }
+          { |vm| expect(expiration_manager.add_default_expiration(vm, vm.expirations).length).to eq(1) }
       end
     end
 
     context 'with different action expiration set', :vcr do
       it 'add correct one' do
         service.running_vms.each \
-          { |vm| expiration_manager.add_default_expiration(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(2) }
+          { |vm| expect(expiration_manager.add_default_expiration(vm, vm.expirations).length).to eq(2) }
       end
     end
   end
@@ -41,27 +35,21 @@ describe Berta::ExpirationManager do
     context 'with no expiration date on vms', :vcr do
       it 'does nothing' do
         service.running_vms.each \
-          { |vm| expiration_manager.remove_invalid_expirations(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(0) }
+          { |vm| expect(expiration_manager.remove_invalid_expirations(vm.expirations).length).to eq(0) }
       end
     end
 
     context 'with valid expiration date on vms', :vcr do
       it 'does nothing' do
         service.running_vms.each \
-          { |vm| expiration_manager.remove_invalid_expirations(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(1) }
+          { |vm| expect(expiration_manager.remove_invalid_expirations(vm.expirations).length).to eq(1) }
       end
     end
 
     context 'with invalid expiration date on vms', :vcr do
       it 'deletes all invalid expiration dates' do
         service.running_vms.each \
-          { |vm| expiration_manager.remove_invalid_expirations(vm) }
-        service.running_vms.each \
-          { |vm| expect(vm.expirations.length).to eq(1) }
+          { |vm| expect(expiration_manager.remove_invalid_expirations(vm.expirations).length).to eq(0) }
       end
     end
   end
@@ -69,7 +57,7 @@ describe Berta::ExpirationManager do
   describe '.update_expirations' do
     before do
       Berta::Settings['expiration']['action'] = 'terminate-hard'
-      allow(Time).to receive(:now).and_return(Time.at(1_486_821_600))
+      allow(Time).to receive(:now).and_return(Time.at(1_487_937_346))
     end
 
     after do
