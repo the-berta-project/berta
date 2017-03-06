@@ -18,8 +18,8 @@ module Berta
       @service = service
       email_file = 'email.erb'.freeze
       email_template_path = "#{File.dirname(__FILE__)}/../../config/#{email_file}"
-      email_template_path = "etc/berta/#{email_file}" \
-        if File.exist?("etc/berta/#{email_file}")
+      email_template_path = "/etc/berta/#{email_file}" \
+        if File.exist?("/etc/berta/#{email_file}")
       email_template_path = "#{ENV['HOME']}/.berta/#{email_file}" \
         if File.exist?("#{ENV['HOME']}/.berta/#{email_file}")
       @email_template = Tilt.new(email_template_path)
