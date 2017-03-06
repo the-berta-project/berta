@@ -1,0 +1,11 @@
+# Cron job running by default every six hours.
+# The lock file can be enabled or disabled via:
+#
+#  service berta-cron start
+#  chkconfig berta-cron on
+#
+# Note that the lock file not existing is a success (and
+# over-all success is needed in order to prevent error
+# messages from cron).
+
+30 */6 * * *	berta	[ ! -f /var/lock/berta-cron ] || /usr/bin/berta
