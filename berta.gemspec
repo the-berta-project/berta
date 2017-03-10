@@ -1,6 +1,6 @@
 Gem::Specification.new do |s|
   s.name = 'berta'
-  s.version = '1.1.1'
+  s.version = '1.1.2'
   s.summary = 'Berta VM expiration tool'
   s.description = 'Berta will check all VMs on OpenNebula cloud for expiration date'
   s.authors = ['Dusan Baran']
