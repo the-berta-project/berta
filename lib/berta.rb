@@ -1,6 +1,5 @@
 # Main Berta module
 module Berta
-  autoload :VERSION, 'berta/version'
   autoload :Service, 'berta/service'
   autoload :VirtualMachineHandler, 'berta/virtual_machine_handler'
   autoload :ExpirationManager, 'berta/expiration_manager'
@@ -12,3 +11,5 @@ module Berta
   autoload :Utils, 'berta/utils'
   autoload :Settings, 'berta/settings'
 end
+
+require 'berta/version'
