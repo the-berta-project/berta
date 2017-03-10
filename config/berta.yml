@@ -13,7 +13,7 @@ berta:
     groups:           # VMs in this groups will be ignored
     clusters:         # VMs in this clusters will be ignored
   logging:
-    file: /var/log/berta/berta.log # File ro write log to. To turn off file logging leave this field empty
+    file: /var/log/berta/berta.log # File to write log to. To turn off file logging leave this field empty
     level: error # Logging level
-  dry-run: false # Berta wont change anything on running instance of OpenNebula
+  dry-run: false # Berta won't change anything on running instance of OpenNebula
   debug: false # Debug mode

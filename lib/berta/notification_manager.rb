@@ -79,10 +79,10 @@ module Berta
       user_name = user['NAME']
       raise Berta::Errors::Entities::NoUserEmailError, "User: #{user_name} with id: #{user['ID']} has no email set" \
         unless user_email
-      mail = Mail.new(email_template.render(Hash,
-                                            user_email: user_email,
-                                            user_name: user_name,
-                                            vms: vms_data(vms)))
+      email_text = email_template.render(Hash, user_email: user_email, user_name: user_name, vms: vms_data(vms))
+      logger.debug "Sending mail to user: #{user_name} with email: #{user_email}:\n#{email_text}"
+      return if Berta::Settings['dry-run']
+      mail = Mail.new(email_text)
       mail.delivery_method :sendmail
       mail.deliver
     end

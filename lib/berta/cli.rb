@@ -63,6 +63,12 @@ module Berta
       initialize_logger(options)
       Berta::CommandExecutor.cleanup
     end
+
+    desc 'version', 'Prints berta version'
+    def version
+      $stdout.puts Berta::VERSION
+    end
+
     default_task :cleanup
 
     private
