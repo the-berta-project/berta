@@ -66,7 +66,7 @@ module Berta
       template = ''
       exps.each { |exp| template += exp.template }
       return if template == ''
-      logger.debug "Setting multiple expirations:\n#{template}"
+      logger.debug "Setting multiple expirations on vm with id=#{handle['ID']} :\n#{template}"
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
         handle.update(template, true)

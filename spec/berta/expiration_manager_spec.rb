@@ -19,7 +19,7 @@ describe Berta::ExpirationManager do
     context 'with good expiration date on vms', :vcr do
       it 'does nothing' do
         service.running_vms.each \
-          { |vm| expect(expiration_manager.add_default_expiration(vm, vm.expirations).length).to eq(1) }
+          { |vm| expect(expiration_manager.add_default_expiration(vm, vm.expirations).length).to eq(0) }
       end
     end
 

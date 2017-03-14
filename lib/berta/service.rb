@@ -66,9 +66,11 @@ module Berta
     # @raise [Berta::Errors::OpenNebula::ResourceStateError]
     # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def clusters
+      return @cached_clusters if @cached_clusters
       logger.debug 'Fetching clusters'
       cluster_pool = OpenNebula::ClusterPool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { cluster_pool.info }
+      @cached_clusters = cluster_pool
       cluster_pool
     end
 
