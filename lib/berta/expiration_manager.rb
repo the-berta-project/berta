@@ -34,7 +34,7 @@ module Berta
     # @param exps [Array<Berta::Entities::Expiration>] VMs expirations to modify
     # @return Expirations with default expiration
     def add_default_expiration(vm, exps)
-      return exps if vm.default_expiration
+      return [] if vm.default_expiration
       exps << Berta::Entities::Expiration.new(vm.next_expiration_id,
                                               Time.now.to_i + Berta::Settings.expiration_offset,
                                               Berta::Settings.expiration.action)
