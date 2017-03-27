@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Berta::NotificationManager do
   subject(:notification_manager) { described_class.new(service) }
+
   let(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
 
   describe '.uids_to_notify' do
@@ -40,6 +41,18 @@ describe Berta::NotificationManager do
         uidsvm = notification_manager.uids_to_notify(service.running_vms)
         expect(uidsvm.length).to eq(1)
         uidsvm.each_value { |vms| expect(vms.length).to eq(2) }
+      end
+    end
+
+    context 'with 1 vm that was notified for past expiration that should be notified', :vcr do
+      before do
+        allow(Time).to receive(:now).and_return(Time.at(1_490_288_146))
+      end
+
+      it 'return hash with 1uid with 1vm hash' do
+        uidsvm = notification_manager.uids_to_notify(service.running_vms)
+        expect(uidsvm.length).to eq(1)
+        uidsvm.each_value { |vms| expect(vms.length).to eq(1) }
       end
     end
   end

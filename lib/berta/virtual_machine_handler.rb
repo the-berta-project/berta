@@ -13,8 +13,9 @@ module Berta
       @handle = vm
     end
 
-    # Sets NOTIFIED value in USER_TEMPLATE to current time
-    # as integer. After updating notified value
+    # Sets notified flag value in USER_TEMPLATE to default expiration
+    # time as integer. If VM has no default expiration nothing will
+    # be updated. After updating notified value
     # fetches data from opennebula database.
     #
     # @note This method modifies OpenNebula database
@@ -24,7 +25,9 @@ module Berta
     # @raise [Berta::Errors::OpenNebula::ResourceStateError]
     # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def update_notified
-      notify_time = Time.now
+      exp = default_expiration
+      return unless exp
+      notify_time = exp.time
       logger.debug "Setting notified flag of VM with id #{handle['ID']} to #{notify_time}"
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
@@ -33,27 +36,26 @@ module Berta
       end
     end
 
-    # Return NOTIFIED value from USER_TEMPLATE if it is set
+    # Return notified flag value from USER_TEMPLATE if it is set
     # else nil.
     #
-    # @return [Numeric] Time when notified was set else nil.
-    #   Time is in UNIX epoch time format.
+    # @return [Numeric] Time of expiration that VM was notified about
     def notified
       time = handle["USER_TEMPLATE/#{NOTIFIED_FLAG}"]
       time.to_i if time
     end
 
     # Determines if VM meets criteria to be notified.
-    # To be notified, VM musn't be notified and
-    # must have expiration with valid expiration
-    # action in notification interval.
+    # To be notified, VM musn't have the same notification
+    # time as default expiration time and must be in
+    # notification interval.
     #
     # @return [Boolean] If this vm should be notified.
     #   True if vm should be notified else false.
     def should_notify?
-      return false if notified
       expiration = default_expiration
       return false unless expiration
+      return false if notified == expiration.time.to_i
       expiration.in_notification_interval?
     end
 
@@ -66,7 +68,8 @@ module Berta
       template = ''
       exps.each { |exp| template += exp.template }
       return if template == ''
-      logger.debug "Setting multiple expirations on vm with id=#{handle['ID']} :\n#{template}"
+      logger.debug \
+        "Setting expirations on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']} : #{template.delete("\n ")}"
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
         handle.update(template, true)
@@ -96,7 +99,9 @@ module Berta
         .min { |exp| exp.time.to_i }
     end
 
-    # TODO
+    # Return first available SCHED_ACTION/ID
+    #
+    # @return [Numeric] Next sched action id
     def next_expiration_id
       elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
       return 0 unless elems

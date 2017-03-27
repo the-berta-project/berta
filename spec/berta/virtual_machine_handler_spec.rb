@@ -15,7 +15,7 @@ describe Berta::VirtualMachineHandler do
       it 'sets vms notified' do
         service.running_vms.each(&:update_notified)
         service.running_vms.each do |vm|
-          expect(vm.handle['USER_TEMPLATE/NOTIFIED']).not_to be_nil
+          expect(vm.notified).not_to be_nil
         end
       end
     end

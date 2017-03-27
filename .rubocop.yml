@@ -16,6 +16,7 @@ Metrics/BlockLength:
     - 'spec/**/*.rb'
     - '*.gemspec'
 Metrics/AbcSize:
+  Max: 20
   Exclude:
     - 'lib/berta/cli.rb'
 

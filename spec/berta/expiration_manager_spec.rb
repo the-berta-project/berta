@@ -2,6 +2,7 @@ require 'spec_helper'
 
 describe Berta::ExpirationManager do
   subject(:expiration_manager) { described_class.new }
+
   let(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
 
   before do

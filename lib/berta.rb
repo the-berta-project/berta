@@ -1,6 +1,7 @@
 # Main Berta module
 module Berta
   autoload :Service, 'berta/service'
+  autoload :Exclusions, 'berta/exclusions'
   autoload :VirtualMachineHandler, 'berta/virtual_machine_handler'
   autoload :ExpirationManager, 'berta/expiration_manager'
   autoload :NotificationManager, 'berta/notification_manager'
