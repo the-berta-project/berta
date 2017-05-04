@@ -20,9 +20,9 @@ module Berta
       # @raise [Berta::Errors::Entities::InvalidEntityXMLError] If xml is not in correct format
       def self.check_xml!(xml)
         raise Berta::Errors::Entities::InvalidEntityXMLError, 'wrong enxpiration xml recieved' \
-          unless %w(ID
+          unless %w[ID
                     ACTION
-                    TIME).all? { |path| xml.has_elements? path }
+                    TIME].all? { |path| xml.has_elements? path }
       end
 
       # Creates expiration class instance from given arguments.
@@ -76,6 +76,11 @@ module Berta
       # @return [Boolean] Truthy if has default action else falsy
       def default_action?
         action == Berta::Settings.expiration.action
+      end
+
+      # TODO: doc
+      def ==(other)
+        id == other.id && action == other.action && time == other.time
       end
     end
   end

@@ -2,11 +2,11 @@ module Berta
   # Class for Handeling berta exclusions
   class Exclusions
     # VM states that take resources
-    RESOURCE_STATES = %w(SUSPENDED POWEROFF CLONING).freeze
+    RESOURCE_STATES = %w[SUSPENDED POWEROFF CLONING].freeze
     # Active state has some lcm states that should not expire
     ACTIVE_STATE = 'ACTIVE'.freeze
     # LCM states in which active state shouldn't expire
-    NON_RESOURCE_ACTIVE_LCM_STATES = %w(EPILOG SHUTDOWN STOP UNDEPLOY FAILURE).freeze
+    NON_RESOURCE_ACTIVE_LCM_STATES = %w[EPILOG SHUTDOWN STOP UNDEPLOY FAILURE].freeze
 
     # Constructs Exclusions object.
     #

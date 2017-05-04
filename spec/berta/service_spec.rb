@@ -83,7 +83,7 @@ describe Berta::Service do
 
     context 'with exclude with clusters', :vcr do
       before do
-        Berta::Settings.exclude['clusters'] = %w(default notsodefault)
+        Berta::Settings.exclude['clusters'] = %w[default notsodefault]
       end
 
       after do

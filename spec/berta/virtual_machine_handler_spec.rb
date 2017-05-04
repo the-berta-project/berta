@@ -89,7 +89,7 @@ describe Berta::VirtualMachineHandler do
       it 'wont change anything' do
         service.running_vms.each do |vm|
           old_length = vm.expirations.length
-          vm.update_expirations([])
+          vm.send(:update_expirations, [])
           expect(vm.expirations.length).to eq(old_length)
         end
       end
@@ -98,9 +98,10 @@ describe Berta::VirtualMachineHandler do
     context 'with one expiration', :vcr do
       it 'sets all vms exactly one expiration' do
         service.running_vms.each do |vm|
-          vm.update_expirations([Berta::Entities::Expiration.new(0,
-                                                                 Time.now.to_i + 3600,
-                                                                 Berta::Settings.expiration.action)])
+          vm.send(:update_expirations,
+                  [Berta::Entities::Expiration.new(0,
+                                                   Time.now.to_i + 3600,
+                                                   Berta::Settings.expiration.action)])
           expect(vm.expirations.length).to eq(1)
         end
       end
@@ -149,6 +150,73 @@ describe Berta::VirtualMachineHandler do
       it 'return nil' do
         service.running_vms.each do |vm|
           expect(vm.default_expiration).to be_nil
+        end
+      end
+    end
+  end
+
+  describe '.update' do
+    before do
+      allow(Time).to receive(:now).and_return(Time.at(1_493_716_826))
+    end
+
+    context 'with no expirations set', :vcr do
+      it 'set default expirations' do
+        vms = service.running_vms
+        vms.each { |vm| expect(vm.default_expiration).to be_nil }
+        vms.each(&:update)
+        vms.each { |vm| expect(vm.default_expiration).not_to be_nil }
+      end
+    end
+
+    context 'with default expirations set', :vcr do
+      it 'wont add any expiration' do
+        vms = service.running_vms
+        vms.each do |vm|
+          expect(vm.default_expiration).not_to be_nil
+          exps_count = vm.expirations.length
+          vm.update
+          expect(vm.default_expiration).not_to be_nil
+          expect(vm.expirations.length).to eq(exps_count)
+        end
+      end
+    end
+
+    context 'with default expirations set and valid expiration set', :vcr do
+      it 'wont change expirations' do
+        vms = service.running_vms
+        vms.each do |vm|
+          expect(vm.default_expiration).not_to be_nil
+          exps_count = vm.expirations.length
+          vm.update
+          expect(vm.default_expiration).not_to be_nil
+          expect(vm.expirations.length).to eq(exps_count)
+        end
+      end
+    end
+
+    context 'with default expirations set and invalid expiration set', :vcr do
+      it 'remove only invalid expiration' do
+        vms = service.running_vms
+        vms.each do |vm|
+          expect(vm.default_expiration).not_to be_nil
+          exps_count = vm.expirations.length
+          vm.update
+          expect(vm.default_expiration).not_to be_nil
+          expect(vm.expirations.length).to be < exps_count
+        end
+      end
+    end
+
+    context 'with valid expirations set and invalid expiration set', :vcr do
+      it 'will remove invalid expiration and will add default expiration' do
+        vms = service.running_vms
+        vms.each do |vm|
+          expect(vm.default_expiration).to be_nil
+          exps_count = vm.expirations.length
+          vm.update
+          expect(vm.default_expiration).not_to be_nil
+          expect(vm.expirations.length).to eq(exps_count)
         end
       end
     end

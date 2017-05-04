@@ -7,10 +7,22 @@ module Berta
 
     # Constructs Virtual machine handler from given vm.
     #
-    # @param vm [Berta::VirtualMachineHandler] VM that will
+    # @param vm [OpenNebula::VirtualMachine] VM that will
     #   this handler use.
     def initialize(vm)
       @handle = vm
+    end
+
+    # Updates vms expirations. That means it adds default
+    # expiration if vm has no default expiration. If VM has
+    # invalid expiration it will be deleted. Other expirations
+    # are kept.
+    def update
+      exps = expirations.keep_if(&:in_expiration_interval?)
+      exps << next_expiration unless default_expiration
+      update_expirations(exps) unless exps == expirations
+    rescue Berta::Errors::BackendError => e
+      logger.error "#{e.message} on vm with id #{vm.handle['ID']}"
     end
 
     # Sets notified flag value in USER_TEMPLATE to default expiration
@@ -36,15 +48,6 @@ module Berta
       end
     end
 
-    # Return notified flag value from USER_TEMPLATE if it is set
-    # else nil.
-    #
-    # @return [Numeric] Time of expiration that VM was notified about
-    def notified
-      time = handle["USER_TEMPLATE/#{NOTIFIED_FLAG}"]
-      time.to_i if time
-    end
-
     # Determines if VM meets criteria to be notified.
     # To be notified, VM musn't have the same notification
     # time as default expiration time and must be in
@@ -58,6 +61,39 @@ module Berta
       return false if notified == expiration.time.to_i
       expiration.in_notification_interval?
     end
+
+    # Return default expiration, that means expiration with
+    # default expiration action that is in expiration offset interval
+    # and is closes to current date.
+    #
+    # @return [Berta::Entities::Expiration] Nearest default expiration else nil
+    def default_expiration
+      expirations
+        .find_all { |exp| exp.default_action? && exp.in_expiration_interval? }
+        .min { |exp| exp.time.to_i }
+    end
+
+    # Returns array of expirations on vm. Expirations are
+    # classes from USER_TEMPLATE/SCHED_ACTION.
+    #
+    # @return [Array<Berta::Entities::Expiration>] All expirations on vm
+    def expirations
+      exps = []
+      handle.each('USER_TEMPLATE/SCHED_ACTION') \
+        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
+      exps
+    end
+
+    # Return notified flag value from USER_TEMPLATE if it is set
+    # else nil.
+    #
+    # @return [Numeric] Time of expiration that VM was notified about
+    def notified
+      time = handle["USER_TEMPLATE/#{NOTIFIED_FLAG}"]
+      time.to_i if time
+    end
+
+    private
 
     # Sets array of expirations to vm, rewrites all old ones.
     # Receiving empty array wont change anything.
@@ -77,28 +113,6 @@ module Berta
       end
     end
 
-    # Returns array of expirations on vm. Expirations are
-    # classes from USER_TEMPLATE/SCHED_ACTION.
-    #
-    # @return [Array<Berta::Entities::Expiration>] All expirations on vm
-    def expirations
-      exps = []
-      handle.each('USER_TEMPLATE/SCHED_ACTION') \
-        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
-      exps
-    end
-
-    # Return default expiration, that means expiration with
-    # default expiration action that is in expiration offset interval
-    # and is closes to current date.
-    #
-    # @return [Berta::Entities::Expiration] Nearest default expiration else nil
-    def default_expiration
-      expirations
-        .find_all { |exp| exp.default_action? && exp.in_expiration_interval? }
-        .min { |exp| exp.time.to_i }
-    end
-
     # Return first available SCHED_ACTION/ID
     #
     # @return [Numeric] Next sched action id
@@ -106,6 +120,15 @@ module Berta
       elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
       return 0 unless elems
       elems.to_a.max.to_i + 1
+    end
+
+    # Return default expiration that would be next for this vm
+    #
+    # @return [Berta::Entities::Expiration] Next expiration for this vm
+    def next_expiration
+      Berta::Entities::Expiration.new(next_expiration_id,
+                                      Time.now.to_i + Berta::Settings.expiration_offset,
+                                      Berta::Settings.expiration.action)
     end
   end
 end

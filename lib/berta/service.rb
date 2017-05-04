@@ -20,7 +20,7 @@ module Berta
     # Fetch running vms from OpenNebula and filter out vms that
     # take no resources.
     #
-    # @return [Berta::VirtualMachineHandler] Virtual machines
+    # @return [Array<Berta::VirtualMachineHandler>] Virtual machines
     #   running on OpenNebula
     # @raise [Berta::Errors::OpenNebula::AuthenticationError]
     # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
@@ -28,18 +28,20 @@ module Berta
     # @raise [Berta::Errors::OpenNebula::ResourceStateError]
     # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
     def running_vms
+      return @cached_vms if @cached_vms
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
       logger.debug "Fetched vms: #{vm_pool.map(&:id)}"
-      Berta::Exclusions.new(Berta::Settings.exclude.ids,
-                            Berta::Settings.exclude.users,
-                            Berta::Settings.exclude.groups,
-                            excluded_clusters).filter!(vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) })
+      @cached_vms = Berta::Exclusions.new(Berta::Settings.exclude.ids,
+                                          Berta::Settings.exclude.users,
+                                          Berta::Settings.exclude.groups,
+                                          excluded_clusters).filter!(vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) })
+      @cached_vms
     end
 
     # Fetch users from OpenNebula
     #
-    # @return [OpenNebula::UserPool] Users on OpenNebula
+    # @return [Array<OpenNebula::UserHandler>] Users on OpenNebula
     # @raise [Berta::Errors::OpenNebula::AuthenticationError]
     # @raise [Berta::Errors::OpenNebula::UserNotAuthorizedError]
     # @raise [Berta::Errors::OpenNebula::ResourceNotFoundError]
@@ -49,7 +51,16 @@ module Berta
       user_pool = OpenNebula::UserPool.new(client)
       Berta::Utils::OpenNebula::Helper.handle_error { user_pool.info }
       logger.debug "Fetched users: #{user_pool.map(&:id)}"
-      user_pool
+      user_pool.map { |user| Berta::UserHandler.new(user) }
+    end
+
+    # Return vms that belong to given user
+    #
+    # @note calls running_vms
+    # @param user [Berta::UserHandler] User to find vms for
+    # @return [Array<Berta::VirtualMachineHandler>] VMs that belong to given user
+    def user_vms(user)
+      running_vms.keep_if { |vm| vm.handle['UID'] == user.handle['ID'] }
     end
 
     # Fetch clusters from OpenNebula

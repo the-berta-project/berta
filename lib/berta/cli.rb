@@ -14,54 +14,54 @@ module Berta
     end
 
     class_option :'opennebula-secret',
-                 default: safe_fetch(%w(opennebula secret)),
+                 default: safe_fetch(%w[opennebula secret]),
                  type: :string
     class_option :'opennebula-endpoint',
-                 default: safe_fetch(%w(opennebula endpoint)),
+                 default: safe_fetch(%w[opennebula endpoint]),
                  type: :string
     class_option :'expiration-offset',
                  required: true,
-                 default: safe_fetch(%w(expiration offset)),
+                 default: safe_fetch(%w[expiration offset]),
                  type: :string
     class_option :'expiration-action',
                  required: true,
-                 default: safe_fetch(%w(expiration action)),
+                 default: safe_fetch(%w[expiration action]),
                  type: :string
     class_option :'notification-deadline',
                  required: true,
-                 default: safe_fetch(%w(notification deadline)),
+                 default: safe_fetch(%w[notification deadline]),
                  type: :string
     class_option :'exclude-ids',
-                 default: safe_fetch(%w(exclude ids)),
+                 default: safe_fetch(%w[exclude ids]),
                  type: :array
     class_option :'exclude-users',
-                 default: safe_fetch(%w(exclude users)),
+                 default: safe_fetch(%w[exclude users]),
                  type: :array
     class_option :'exclude-groups',
-                 default: safe_fetch(%w(exclude groups)),
+                 default: safe_fetch(%w[exclude groups]),
                  type: :array
     class_option :'exclude-clusters',
-                 default: safe_fetch(%w(exclude clusters)),
+                 default: safe_fetch(%w[exclude clusters]),
                  type: :array
     class_option :'dry-run',
-                 default: safe_fetch(%w(dry-run)),
+                 default: safe_fetch(%w[dry-run]),
                  type: :boolean
     class_option :'logging-file',
-                 default: safe_fetch(%w(logging file)),
+                 default: safe_fetch(%w[logging file]),
                  type: :string
     class_option :'logging-level',
                  required: true,
-                 default: safe_fetch(%w(logging level)),
+                 default: safe_fetch(%w[logging level]),
                  type: :string
     class_option :debug,
-                 default: safe_fetch(%w(debug)),
+                 default: safe_fetch(%w[debug]),
                  type: :boolean
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
       initialize_configuration(options)
       initialize_logger(options)
-      Berta::CommandExecutor.cleanup
+      Berta::CommandExecutor.new.cleanup
     end
 
     desc 'version', 'Prints berta version'
