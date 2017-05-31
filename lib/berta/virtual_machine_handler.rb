@@ -93,6 +93,10 @@ module Berta
       time.to_i if time
     end
 
+    def ==(other)
+      handle.id == other.handle.id
+    end
+
     private
 
     # Sets array of expirations to vm, rewrites all old ones.

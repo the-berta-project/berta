@@ -11,8 +11,21 @@ describe Berta::VirtualMachineHandler do
   end
 
   describe '.update_notified' do
-    context 'with valid response', :vcr do
-      it 'sets vms notified' do
+    context 'with vms with no default expiration', :vcr do
+      it 'wont set vms notified' do
+        service.running_vms.each(&:update_notified)
+        service.running_vms.each do |vm|
+          expect(vm.notified).to be_nil
+        end
+      end
+    end
+
+    context 'with vms with default expiration', :vcr do
+      before do
+        allow(Time).to receive(:now).and_return(Time.at(1_494_835_917))
+      end
+
+      it 'sets vms noified' do
         service.running_vms.each(&:update_notified)
         service.running_vms.each do |vm|
           expect(vm.notified).not_to be_nil

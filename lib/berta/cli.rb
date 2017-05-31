@@ -31,17 +31,20 @@ module Berta
                  required: true,
                  default: safe_fetch(%w[notification deadline]),
                  type: :string
-    class_option :'exclude-ids',
-                 default: safe_fetch(%w[exclude ids]),
+    class_option :'filter-type',
+                 default: safe_fetch(%w[filter type]),
+                 type: :string
+    class_option :'filter-ids',
+                 default: safe_fetch(%w[filter ids]),
                  type: :array
-    class_option :'exclude-users',
-                 default: safe_fetch(%w[exclude users]),
+    class_option :'filter-users',
+                 default: safe_fetch(%w[filter users]),
                  type: :array
-    class_option :'exclude-groups',
-                 default: safe_fetch(%w[exclude groups]),
+    class_option :'filter-groups',
+                 default: safe_fetch(%w[filter groups]),
                  type: :array
-    class_option :'exclude-clusters',
-                 default: safe_fetch(%w[exclude clusters]),
+    class_option :'filter-clusters',
+                 default: safe_fetch(%w[filter clusters]),
                  type: :array
     class_option :'dry-run',
                  default: safe_fetch(%w[dry-run]),
@@ -80,10 +83,11 @@ module Berta
       settings['expiration']['offset'] = options['expiration-offset']
       settings['expiration']['action'] = options['expiration-action']
       settings['notification']['deadline'] = options['notification-deadline']
-      settings['exclude']['ids'] = options['exclude-ids']
-      settings['exclude']['users'] = options['exclude-users']
-      settings['exclude']['groups'] = options['exclude-groups']
-      settings['exclude']['clusters'] = options['exclude-clusters']
+      settings['filter']['type'] = options['filter-type']
+      settings['filter']['ids'] = options['filter-ids']
+      settings['filter']['users'] = options['filter-users']
+      settings['filter']['groups'] = options['filter-groups']
+      settings['filter']['clusters'] = options['filter-clusters']
       settings['dry-run'] = options['dry-run']
       settings['debug'] = options['debug']
       settings['logging']['file'] = options['logging-file']

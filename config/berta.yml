@@ -7,11 +7,12 @@ berta:
     action: terminate-hard         # Type of action that will be executed
   notification:
     deadline: 1 day                # Time when user should be notified before action will be executed
-  exclude:                         # Exclude VMs to ignore them
-    ids:                           # VMs with this IDs will be ignored
-    users:                         # VMs owned by this users will be ignored
-    groups:                        # VMs in this groups will be ignored
-    clusters:                      # VMs in this clusters will be ignored
+  filter:                          # Filter VMs in after fetch
+    type: exclude                  # Type of filter, options are include and exclude
+    ids:                           # VMs with this IDs will be used in filter
+    users:                         # VMs owned by this users will be used in filter
+    groups:                        # VMs in this groups will be used in filter
+    clusters:                      # VMs in this clusters will be used in filter
   logging:
     file: /var/log/berta/berta.log # File to write log to. To turn off file logging leave this field empty
     level: error                   # Logging level

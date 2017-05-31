@@ -14,166 +14,215 @@ describe Berta::Service do
   end
 
   describe '.running_vms' do
-    context 'with empty exclude', :vcr do
-      it 'gets running vms' do
-        vms = service.running_vms
-        expect(vms.count).to eq(2)
+    context 'with exclude filter' do
+      context 'with no params' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'returns all 2 vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(2)
+        end
+      end
+
+      context 'with ids' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          Berta::Settings['filter']['ids'] = ['3']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out 1 vm', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(1)
+        end
+      end
+
+      context 'with users' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          Berta::Settings['filter']['users'] = ['oneadmin']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(0)
+        end
+      end
+
+      context 'with groups' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          Berta::Settings['filter']['groups'] = ['oneadmin']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(0)
+        end
+      end
+
+      context 'with clusters' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          Berta::Settings['filter']['clusters'] = ['default']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(0)
+        end
+      end
+
+      context 'with combined params' do
+        before do
+          Berta::Settings['filter']['type'] = 'exclude'
+          Berta::Settings['filter']['ids'] = ['2']
+          Berta::Settings['filter']['groups'] = ['noexist']
+          Berta::Settings['filter']['cluster'] = ['noexist']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out 1 vm', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(1)
+        end
       end
     end
 
-    context 'with exclude with id', :vcr do
-      before do
-        Berta::Settings.exclude['ids'] = [6, 420]
+    context 'with include filter' do
+      context 'with no params' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'returns all 2 vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(0)
+        end
       end
 
-      after do
-        Berta::Settings.reload!
+      context 'with ids' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          Berta::Settings['filter']['ids'] = ['2']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'filters out 1 vm', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(1)
+        end
       end
 
-      it 'get 1 vm' do
-        vms = service.running_vms
-        expect(vms.count).to eq(1)
-      end
-    end
+      context 'with users' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          Berta::Settings['filter']['users'] = ['oneadmin']
+          service.create_filter
+        end
 
-    context 'with exclude with users', :vcr do
-      before do
-        Berta::Settings.exclude['users'] = ['oneadmin']
-      end
+        after do
+          Berta::Settings.reload!
+        end
 
-      after do
-        Berta::Settings.reload!
-      end
-
-      it 'get 0 vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(0)
-      end
-    end
-
-    context 'with exclude with groups', :vcr do
-      before do
-        Berta::Settings.exclude['groups'] = ['oneadmin']
+        it 'returns all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(2)
+        end
       end
 
-      after do
-        Berta::Settings.reload!
+      context 'with groups' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          Berta::Settings['filter']['groups'] = ['oneadmin']
+          service.create_filter
+        end
+
+        after do
+          Berta::Settings.reload!
+        end
+
+        it 'returns all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(2)
+        end
       end
 
-      it 'get 0 vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(0)
-      end
-    end
+      context 'with clusters' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          Berta::Settings['filter']['clusters'] = ['default']
+          service.create_filter
+        end
 
-    context 'with exclude with groups that doesnt exist', :vcr do
-      before do
-        Berta::Settings.exclude['groups'] = ['group']
-      end
+        after do
+          Berta::Settings.reload!
+        end
 
-      after do
-        Berta::Settings.reload!
-      end
-
-      it 'get all vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(2)
-      end
-    end
-
-    context 'with exclude with clusters', :vcr do
-      before do
-        Berta::Settings.exclude['clusters'] = %w[default notsodefault]
+        it 'returns all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(2)
+        end
       end
 
-      after do
-        Berta::Settings.reload!
-      end
+      context 'with combined params' do
+        before do
+          Berta::Settings['filter']['type'] = 'include'
+          Berta::Settings['filter']['ids'] = ['2']
+          Berta::Settings['filter']['clusters'] = ['default']
+          service.create_filter
+        end
 
-      it 'get 0 vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(0)
-      end
-    end
+        after do
+          Berta::Settings.reload!
+        end
 
-    context 'with exclude with clusters that doesnt exist', :vcr do
-      before do
-        Berta::Settings.exclude['clusters'] = ['himum']
-      end
-
-      after do
-        Berta::Settings.reload!
-      end
-
-      it 'get all vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(2)
-      end
-    end
-
-    context 'with exclude with all set but invalid', :vcr do
-      before do
-        Berta::Settings.exclude['clusters'] = ['ahojmiso']
-        Berta::Settings.exclude['users'] = ['totoje']
-        Berta::Settings.exclude['groups'] = ['test']
-        Berta::Settings.exclude['ids'] = ['8']
-      end
-
-      after do
-        Berta::Settings.reload!
-      end
-
-      it 'get all vms' do
-        vms = service.running_vms
-        expect(vms.length).to eq(2)
-      end
-    end
-
-    context 'with all vms in PENDING state', :vcr do
-      it 'will filter out all vms' do
-        vms = service.running_vms
-        expect(vms).to be_empty
-      end
-    end
-
-    context 'with 1 vm in ACTIVE state and RUNNING lcm state', :vcr do
-      it 'will keep all vms' do
-        vms = service.running_vms
-        expect(vms).not_to be_empty
-        expect(vms.length).to eq(1)
-      end
-    end
-
-    context 'with 1 vm in SUSPENDED state', :vcr do
-      it 'will keep all vms' do
-        vms = service.running_vms
-        expect(vms).not_to be_empty
-        expect(vms.length).to eq(1)
-      end
-    end
-
-    context 'with 1 vm in SHUTDOWN state', :vcr do
-      it 'will filter out all vms' do
-        vms = service.running_vms
-        expect(vms).not_to be_empty
-        expect(vms.length).to eq(1)
-      end
-    end
-
-    context 'with wrong secret', :vcr do
-      let(:wrong_service) { described_class.new('ahoj:miso', 'http://localhost:2633/RPC2') }
-
-      it 'raises authentication error' do
-        expect { wrong_service.running_vms }.to raise_error Berta::Errors::OpenNebula::AuthenticationError
-      end
-    end
-
-    context 'with wrong endpoint', :vcr do
-      let(:wrong_service) { described_class.new('oneadmin:opennebula', 'http://remotehost:2633/RPC2') }
-
-      it 'raises resource retrieval error' do
-        expect { wrong_service.running_vms }.to raise_error Berta::Errors::OpenNebula::ResourceRetrievalError
+        it 'returns all vms', :vcr do
+          vms = service.running_vms
+          expect(vms.length).to eq(2)
+        end
       end
     end
   end
+
+  # TODO: user_vms
 end

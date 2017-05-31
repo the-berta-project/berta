@@ -8,6 +8,8 @@ Metrics/LineLength:
 
 Metrics/MethodLength:
   Max: 15
+  Exclude:
+   - 'lib/berta/cli.rb'
 
 Metrics/BlockLength:
   Exclude:
@@ -24,4 +26,7 @@ RSpec/MultipleExpectations:
   Enabled: false
 
 RSpec/ExampleLength:
+  Enabled: false
+
+RSpec/NestedGroups:
   Enabled: false

@@ -1,5 +1,6 @@
 require 'erb'
 require 'tilt'
+require 'mail'
 
 module Berta
   # Class for executing main berta commands
@@ -12,6 +13,7 @@ module Berta
       email_template_path = "#{ENV['HOME']}/.berta/#{email_file}" \
         if File.exist?("#{ENV['HOME']}/.berta/#{email_file}")
       @email_template = Tilt.new(email_template_path)
+      Mail.defaults { delivery_method :sendmail }
     end
 
     # Function that performs clean up operation.
@@ -24,7 +26,6 @@ module Berta
       vms = service.running_vms
       users = service.users
       vms.each(&:update)
-      Mail.defaults { delivery_method :sendmail }
       users.each { |user| user.notify(service.user_vms(user), @email_template) }
     rescue Berta::Errors::BackendError => e
       logger.error e.message
