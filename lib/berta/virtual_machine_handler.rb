@@ -20,7 +20,11 @@ module Berta
     def update
       exps = expirations.keep_if(&:in_expiration_interval?)
       exps << next_expiration unless default_expiration
-      update_expirations(exps) unless exps == expirations
+      if exps == expirations
+        logger.debug "No changes in expirations for vm #{handle['ID']}"
+      else
+        update_expirations(exps)
+      end
     rescue Berta::Errors::BackendError => e
       logger.error "#{e.message} on vm with id #{vm.handle['ID']}"
     end
@@ -40,12 +44,8 @@ module Berta
       exp = default_expiration
       return unless exp
       notify_time = exp.time
-      logger.debug "Setting notified flag of VM with id #{handle['ID']} to #{notify_time}"
-      return if Berta::Settings['dry-run']
-      Berta::Utils::OpenNebula::Helper.handle_error do
-        handle.update("#{NOTIFIED_FLAG} = #{notify_time.to_i}", true)
-        handle.info
-      end
+      logger.info "Setting notified flag of VM with id #{handle['ID']} to #{notify_time}"
+      send_update("#{NOTIFIED_FLAG} = #{notify_time.to_i}")
     end
 
     # Determines if VM meets criteria to be notified.
@@ -105,11 +105,15 @@ module Berta
     # @note This method modifies OpenNebula database
     # @param exps [Array<Berta::Entities::Expiration>] Expirations to use
     def update_expirations(exps)
-      template = ''
-      exps.each { |exp| template += exp.template }
+      template = exps.inject('') { |temp, exp| temp + exp.template }
       return if template == ''
-      logger.debug \
-        "Setting expirations on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']} : #{template.delete("\n ")}"
+      logger.info "Setting expirations on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"
+      logger.debug template.delete("\n ")
+      send_update(template)
+    end
+
+    # Sends data to opennebula service
+    def send_update(template)
       return if Berta::Settings['dry-run']
       Berta::Utils::OpenNebula::Helper.handle_error do
         handle.update(template, true)

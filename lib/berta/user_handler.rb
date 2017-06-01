@@ -22,7 +22,10 @@ module Berta
     # @param email_template [Tilt::ERBTemplate] Email template
     def notify(user_vms, email_template)
       to_notify = user_vms.keep_if(&:should_notify?)
-      return if to_notify.empty?
+      if to_notify.empty?
+        logger.debug "No notifications for user #{handle['NAME']}"
+        return
+      end
       send_notification(to_notify, email_template)
       user_vms.each(&:update_notified)
     rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
@@ -35,7 +38,8 @@ module Berta
       raise Berta::Errors::Entities::NoUserEmailError, "User: #{user_name} with id: #{handle['ID']} has no email set" \
         unless user_email
       email_text = email_template.render(Hash, user_email: user_email, user_name: user_name, vms: vms_data(user_vms))
-      logger.debug "Sending mail to user: #{user_name} with email: #{user_email}:\n#{email_text}"
+      logger.info "Sending mail to user: #{user_name} on email: #{user_email}"
+      logger.debug email_text
       Mail.new(email_text).deliver unless Berta::Settings['dry-run']
     end
 
