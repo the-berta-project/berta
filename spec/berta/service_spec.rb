@@ -224,5 +224,17 @@ describe Berta::Service do
     end
   end
 
-  # TODO: user_vms
+  describe '.user_vms' do
+    context 'with 2 users owning vms in notification are', :vcr do
+      let(:users) { service.users }
+
+      it 'returns vms of oneadmin user' do
+        expect(service.user_vms(users.find { |user| user.handle.name == 'oneadmin' })).not_to be_empty
+      end
+
+      it 'returns vms of kenbone user' do
+        expect(service.user_vms(users.find { |user| user.handle.name == 'kenbone' })).not_to be_empty
+      end
+    end
+  end
 end

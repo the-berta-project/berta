@@ -70,7 +70,7 @@ module Berta
     # @param user [Berta::UserHandler] User to find vms for
     # @return [Array<Berta::VirtualMachineHandler>] VMs that belong to given user
     def user_vms(user)
-      running_vms.keep_if { |vm| vm.handle['UID'] == user.handle['ID'] }
+      running_vms.select { |vm| vm.handle['UID'] == user.handle['ID'] }
     end
 
     # Fetch clusters from OpenNebula
