@@ -2,12 +2,8 @@ module Berta
   module Utils
     # Base Filter class, filters out invalid states
     class Filter
-      # VM states that take resources
-      RESOURCE_STATES = %w[SUSPENDED POWEROFF CLONING].freeze
-      # Active state has some lcm states that should not expire
-      ACTIVE_STATE = 'ACTIVE'.freeze
-      # LCM states in which active state shouldn't expire
-      NON_RESOURCE_ACTIVE_LCM_STATES = %w[EPILOG SHUTDOWN STOP UNDEPLOY FAILURE].freeze
+      # VM states to ignore
+      IGNORED_STATES = %w[PENDING HOLD].freeze
 
       # Constructs Filter object.
       #
@@ -83,9 +79,7 @@ module Berta
       private
 
       def takes_resources?(vmh)
-        return true if RESOURCE_STATES.any? { |state| vmh.handle.state_str == state }
-        true if vmh.handle.state_str == ACTIVE_STATE &&
-                NON_RESOURCE_ACTIVE_LCM_STATES.none? { |state| vmh.handle.lcm_state_str.include? state }
+        !IGNORED_STATES.include?(vmh.handle.state_str)
       end
 
       def log_filter
