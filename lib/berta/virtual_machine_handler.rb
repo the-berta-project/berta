@@ -18,15 +18,12 @@ module Berta
     # invalid expiration it will be deleted. Other expirations
     # are kept.
     def update
-      exps = expirations.keep_if(&:in_expiration_interval?)
-      exps << next_expiration unless default_expiration
-      if exps == expirations
-        logger.debug "No changes in expirations for vm #{handle['ID']}"
-      else
-        update_expirations(exps)
-      end
+      exps = remove_invalid(expirations)
+      exps = add_default_expiration(exps)
+      return if exps == expirations
+      update_expirations(exps)
     rescue Berta::Errors::BackendError => e
-      logger.error "#{e.message} on vm with id #{vm.handle['ID']}"
+      logger.error "#{e.message} on vm with id #{handle['ID']}"
     end
 
     # Sets notified flag value in USER_TEMPLATE to default expiration
@@ -99,6 +96,25 @@ module Berta
 
     private
 
+    def remove_invalid(exps)
+      valid = exps.select(&:in_expiration_interval?)
+      if valid.length != exps.length
+        logger.info "Removing #{exps.length - valid.length} invalid expirations on vm with" \
+                    "id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"
+      end
+      valid
+    end
+
+    def add_default_expiration(exps)
+      unless default_expiration
+        new_default = next_expiration
+        exps << new_default
+        logger.info "Adding default expiration on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"\
+          ", expires at #{Time.at(new_default.time)}"
+      end
+      exps
+    end
+
     # Sets array of expirations to vm, rewrites all old ones.
     # Receiving empty array wont change anything.
     #
@@ -107,7 +123,6 @@ module Berta
     def update_expirations(exps)
       template = exps.inject('') { |temp, exp| temp + exp.template }
       return if template == ''
-      logger.info "Setting expirations on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"
       logger.debug template.delete("\n ")
       send_update(template)
     end

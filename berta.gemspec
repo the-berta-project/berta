@@ -13,6 +13,7 @@ Gem::Specification.new do |s|
   s.email = 'dbaran@hotmail.sk'
   s.homepage = 'https://github.com/dudoslav/berta'
   s.license = 'Apache License, Version 2.0'
+  s.required_ruby_version = '>= 2.1'
 
   s.files         = `git ls-files -z`.split("\x0").reject { |f| f.match(%r{^(test|spec|features)/}) }
   s.executables   = s.files.grep(%r{^bin/}) { |f| File.basename(f) }
