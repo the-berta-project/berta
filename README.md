@@ -1,3 +1,7 @@
+<p align="center">
+  <img alt="Berta" src="http://i.imgur.com/tGCcsEU.png" width="500"/>
+</p>
+
 # Berta
 
 [![Build Status](https://travis-ci.org/dudoslav/berta.svg?branch=master)](https://travis-ci.org/dudoslav/berta)
