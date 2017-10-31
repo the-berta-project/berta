@@ -5,20 +5,18 @@ require 'mail'
 module Berta
   # Class that encapsulates mailing functionality
   class Notification
-    class << self
-      email_file = 'email.erb'.freeze
+    email_file = 'email.erb'.freeze
 
-      email_template_path = "#{File.dirname(__FILE__)}/../../config/#{email_file}"
+    email_template_path = "#{File.dirname(__FILE__)}/../../config/#{email_file}"
 
-      email_template_path = "/etc/berta/#{email_file}" \
-        if File.exist?("/etc/berta/#{email_file}")
+    email_template_path = "/etc/berta/#{email_file}" \
+      if File.exist?("/etc/berta/#{email_file}")
 
-      email_template_path = "#{ENV['HOME']}/.berta/#{email_file}" \
-        if File.exist?("#{ENV['HOME']}/.berta/#{email_file}")
+    email_template_path = "#{ENV['HOME']}/.berta/#{email_file}" \
+      if File.exist?("#{ENV['HOME']}/.berta/#{email_file}")
 
-      EMAIL_TEMPLATE = Tilt.new(email_template_path).freeze
-      Mail.defaults { delivery_method :sendmail }
-    end
+    EMAIL_TEMPLATE = Tilt.new(email_template_path).freeze
+    Mail.defaults { delivery_method :sendmail }
 
     def initialize(name, email)
       @name = name
