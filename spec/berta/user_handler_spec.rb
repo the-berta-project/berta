@@ -3,6 +3,10 @@ require 'spec_helper'
 describe Berta::UserHandler do
   let(:service) { Berta::Service.new('oneadmin:opennebula', 'http://localhost:2633/RPC2') }
 
+  before do
+    stub_const('Berta::Notification::EMAIL_TEMPLATE', Tilt.new('spec/test_mail.erb'))
+  end
+
   describe '#new' do
     it 'returns list of user handlers', :vcr do
       users = service.users
@@ -11,8 +15,6 @@ describe Berta::UserHandler do
   end
 
   describe '.notify' do
-    let(:template) { Tilt.new('spec/test_mail.erb') }
-
     context 'with noone to notify', :vcr do
       before do
         allow(Time).to receive(:now).and_return(Time.at(1_493_118_324))
@@ -21,7 +23,7 @@ describe Berta::UserHandler do
 
       it 'wont send email' do
         users = service.users
-        users.each { |user| user.notify(service.running_vms, template) }
+        users.each { |user| user.notify(service.running_vms) }
         expect(Mail::TestMailer.deliveries.length).to eq(0)
       end
     end
@@ -34,7 +36,7 @@ describe Berta::UserHandler do
 
       it 'will send email' do
         users = service.users
-        users.each { |user| user.notify(service.running_vms, template) }
+        users.each { |user| user.notify(service.running_vms) }
         expect(Mail::TestMailer.deliveries.length).not_to eq(0)
       end
     end

@@ -13,44 +13,21 @@ module Berta
     #   handle use
     def initialize(user)
       @handle = user
+      @email = handle['TEMPLATE/EMAIL']
+      @name = handle['NAME']
     end
 
-    # Notifies user about all vms that are in notification interval
-    #
-    # @param user_vms [Array<Berta::VirtualMachineHandler>] All vms that belong to
-    #   this user
-    # @param email_template [Tilt::ERBTemplate] Email template
-    def notify(user_vms, email_template)
-      to_notify = user_vms.keep_if(&:should_notify?)
+    def notify(vms)
+      notification = Berta::Notification.new(@name, @email)
+      to_notify = vms.keep_if(&:should_notify?)
       if to_notify.empty?
-        logger.debug "No notifications for user #{handle['NAME']}"
+        logger.debug "No notifications for user #{@name}"
         return
       end
-      send_notification(to_notify, email_template)
-      user_vms.each(&:update_notified)
-    rescue ArgumentError, Berta::Errors::Entities::NoUserEmailError => e
-      logger.error e.message
-    end
-
-    def send_notification(user_vms, email_template)
-      user_email = handle['TEMPLATE/EMAIL']
-      user_name = handle['NAME']
-      raise Berta::Errors::Entities::NoUserEmailError, "User: #{user_name} with id: #{handle['ID']} has no email set" \
-        unless user_email
-      email_text = email_template.render(Hash, user_email: user_email, user_name: user_name, vms: vms_data(user_vms))
-      logger.info "Sending mail to user: #{user_name} on email: #{user_email}"
-      logger.debug email_text
-      Mail.new(email_text).deliver unless Berta::Settings['dry-run']
-    end
-
-    private
-
-    def vms_data(vms)
-      vms.map do |vm|
-        { id: vm.handle['ID'],
-          name: vm.handle['NAME'],
-          expiration: vm.default_expiration.time.to_i }
-      end
+      notification.notify(to_notify)
+      to_notify.each(&:update_notified)
+    rescue Berta::Errors::Entities::NoEmailError
+      logger.error "User #{handle['ID']} has no email, skipping"
     end
   end
 end

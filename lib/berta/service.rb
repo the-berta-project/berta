@@ -64,6 +64,13 @@ module Berta
       user_pool.map { |user| Berta::UserHandler.new(user) }
     end
 
+    def groups
+      group_pool = OpenNebula::GroupPool.new(client)
+      Berta::Utils::OpenNebula::Helper.handle_error { group_pool.info }
+      logger.debug "Fetched groups: #{group_pool.map(&:id)}"
+      group_pool.map { |group| Berta::GroupHandler.new(group) }
+    end
+
     # Return vms that belong to given user
     #
     # @note calls running_vms
@@ -71,6 +78,10 @@ module Berta
     # @return [Array<Berta::VirtualMachineHandler>] VMs that belong to given user
     def user_vms(user)
       running_vms.select { |vm| vm.handle['UID'] == user.handle['ID'] }
+    end
+
+    def group_vms(group)
+      running_vms.select { |vm| vm.handle['GID'] == group.handle['ID'] }
     end
 
     # Fetch clusters from OpenNebula
