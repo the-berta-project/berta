@@ -1,7 +1,3 @@
-require 'mail'
-require 'erb'
-require 'tilt'
-
 module Berta
   # Class for handeling user methods
   class UserHandler

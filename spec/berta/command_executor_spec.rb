@@ -1,11 +1,10 @@
 require 'spec_helper'
 
 describe Berta::CommandExecutor do
-  # subject(:command_executor) { described_class.new }
-
   describe '.cleanup' do
     before do
-      stub_const('Berta::Notification::EMAIL_TEMPLATE', Tilt.new('spec/test_mail.erb'))
+      Berta::Settings['email-template'] = 'spec/test_mail.erb'
+      Mail::TestMailer.deliveries.clear
     end
 
     context 'in real world', :vcr do

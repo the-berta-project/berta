@@ -17,6 +17,11 @@ Metrics/BlockLength:
     - '**/*.rake'
     - 'spec/**/*.rb'
     - '*.gemspec'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/berta/cli.rb'
+
 Metrics/AbcSize:
   Max: 20
   Exclude:
