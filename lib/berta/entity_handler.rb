@@ -12,7 +12,7 @@ module Berta
     end
 
     def notify(vms)
-      notification = Berta::Notification.new(name, email)
+      notification = Berta::Notification.new(name, email, type)
       to_notify = vms.keep_if(&:should_notify?)
       if to_notify.empty?
         logger.debug { "No notifications for #{type} #{name} with id #{id}" }
