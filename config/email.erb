@@ -1,15 +1,16 @@
 <%# Available parameters: %>
-<%# [String] user_name   %>
-<%# [String] user_email  %>
+<%# [String] name   %>
+<%# [String] email  %>
+<%# [String] type  %>
 <%# [Array<Hash>] vms, Array of Hashes with values: %>
 <%# 	[String] id  %>
 <%# 	[String] name  %>
 <%# 	[String] expiration  %>
 From: cesnet@mail.muni.cz
-To: <%= user_email %>
+To: <%= email %>
 Subject: OpenNebula VM expiration
 
-Hi <%= user_name %>,
+Hi <%= name %>,
 your vms are about to expire..
 
 VM Name | Expiration Date

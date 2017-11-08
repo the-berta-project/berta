@@ -59,17 +59,28 @@ module Berta
     class_option :debug,
                  default: safe_fetch(%w[debug]),
                  type: :boolean
+    class_option :'email-template',
+                 required: true,
+                 default: safe_fetch(%w[email-template]),
+                 type: :string
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
       initialize_configuration(options)
       initialize_logger(options)
+      initialize_email
       Berta::CommandExecutor.new.cleanup
     end
 
-    desc 'version', 'Prints berta version'
+    desc 'version', 'Prints Berta version'
     def version
       $stdout.puts Berta::VERSION
+    end
+
+    desc 'config', 'Prints Berta config values'
+    def config
+      initialize_configuration(options)
+      Berta::Settings.each { |key, val| $stdout.puts "#{key}\t=\t#{val}" }
     end
 
     default_task :cleanup
@@ -92,6 +103,7 @@ module Berta
       settings['debug'] = options['debug']
       settings['logging']['file'] = options['logging-file']
       settings['logging']['level'] = options['logging-level']
+      settings['email-template'] = options['email-template']
       Berta::Settings.merge!(settings)
     end
 
@@ -104,7 +116,7 @@ module Berta
 
       setup_file_logger(options['logging-file']) if options['logging-file']
 
-      logger.debug 'Running in debug mode...'
+      logger.debug { 'Running in debug mode...' }
     end
 
     def setup_file_logger(logging_file)
@@ -113,6 +125,10 @@ module Berta
         return
       end
       logger.adapter :file, logging_file
+    end
+
+    def initialize_email
+      Mail.defaults { delivery_method :sendmail }
     end
   end
 end

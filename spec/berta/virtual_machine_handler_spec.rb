@@ -63,7 +63,7 @@ describe Berta::VirtualMachineHandler do
 
     context 'with 1vm with 2schelude action done', :vcr do
       it 'return false' do
-        expect(service.running_vms.first.should_notify?).to be_falsey
+        expect(service.running_vms.first).not_to be_should_notify
       end
     end
   end

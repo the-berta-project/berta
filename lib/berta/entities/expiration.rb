@@ -41,13 +41,13 @@ module Berta
       #
       # @return [String] Schelude action template
       def template
-        <<-EOT
+        <<-VM_TEMPLATE
       SCHED_ACTION = [
           ID     = "#{id}",
           ACTION = "#{action}",
           TIME   = "#{time}"
       ]
-      EOT
+      VM_TEMPLATE
       end
 
       # Determines if this schelude action is in notification interval.

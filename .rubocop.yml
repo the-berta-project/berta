@@ -1,7 +1,7 @@
 require: rubocop-rspec
 
 AllCops:
-  TargetRubyVersion: 2.0
+  TargetRubyVersion: 2.1
 
 Metrics/LineLength:
   Max: 135
@@ -17,6 +17,11 @@ Metrics/BlockLength:
     - '**/*.rake'
     - 'spec/**/*.rb'
     - '*.gemspec'
+
+Metrics/ClassLength:
+  Exclude:
+    - 'lib/berta/cli.rb'
+
 Metrics/AbcSize:
   Max: 20
   Exclude:

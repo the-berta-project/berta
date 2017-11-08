@@ -1,0 +1,43 @@
+---
+http_interactions:
+- request:
+    method: post
+    uri: http://localhost:2633/RPC2
+    body:
+      encoding: UTF-8
+      string: |
+        <?xml version="1.0" ?><methodCall><methodName>one.userpool.info</methodName><params><param><value><string>oneadmin:opennebula</string></value></param></params></methodCall>
+    headers:
+      User-Agent:
+      - XMLRPC::Client (Ruby 2.2.7)
+      Content-Type:
+      - text/xml; charset=utf-8
+      Content-Length:
+      - '173'
+      Connection:
+      - close
+      Accept-Encoding:
+      - identity
+      Accept:
+      - "*/*"
+  response:
+    status:
+      code: 200
+      message: OK
+    headers:
+      Content-Type:
+      - text/xml; charset=utf-8
+      Content-Length:
+      - '2027'
+      Connection:
+      - close
+      Date:
+      - Wed, 08 Nov 2017 12:37:13 UTC
+      Server:
+      - Xmlrpc-c_Abyss/1.40.0
+    body:
+      encoding: UTF-8
+      string: "<?xml version=\"1.0\" encoding=\"UTF-8\"?>\r\n<methodResponse>\r\n<params>\r\n<param><value><array><data>\r\n<value><boolean>1</boolean></value>\r\n<value><string>&lt;USER_POOL&gt;&lt;USER&gt;&lt;ID&gt;0&lt;/ID&gt;&lt;GID&gt;0&lt;/GID&gt;&lt;GROUPS&gt;&lt;ID&gt;0&lt;/ID&gt;&lt;/GROUPS&gt;&lt;GNAME&gt;oneadmin&lt;/GNAME&gt;&lt;NAME&gt;oneadmin&lt;/NAME&gt;&lt;PASSWORD&gt;&lt;![CDATA[4478db59d30855454ece114e8ccfa5563d21c9bd]]&gt;&lt;/PASSWORD&gt;&lt;AUTH_DRIVER&gt;&lt;![CDATA[core]]&gt;&lt;/AUTH_DRIVER&gt;&lt;ENABLED&gt;1&lt;/ENABLED&gt;&lt;TEMPLATE&gt;&lt;EMAIL&gt;&lt;![CDATA[mail@femail.ru]]&gt;&lt;/EMAIL&gt;&lt;TOKEN_PASSWORD&gt;&lt;![CDATA[fe8c6045754c4a441ca4bd71a3de3d66e7fcd401]]&gt;&lt;/TOKEN_PASSWORD&gt;&lt;/TEMPLATE&gt;&lt;/USER&gt;&lt;QUOTAS&gt;&lt;ID&gt;0&lt;/ID&gt;&lt;DATASTORE_QUOTA&gt;&lt;/DATASTORE_QUOTA&gt;&lt;NETWORK_QUOTA&gt;&lt;/NETWORK_QUOTA&gt;&lt;VM_QUOTA&gt;&lt;/VM_QUOTA&gt;&lt;IMAGE_QUOTA&gt;&lt;/IMAGE_QUOTA&gt;&lt;/QUOTAS&gt;&lt;USER&gt;&lt;ID&gt;1&lt;/ID&gt;&lt;GID&gt;0&lt;/GID&gt;&lt;GROUPS&gt;&lt;ID&gt;0&lt;/ID&gt;&lt;/GROUPS&gt;&lt;GNAME&gt;oneadmin&lt;/GNAME&gt;&lt;NAME&gt;serveradmin&lt;/NAME&gt;&lt;PASSWORD&gt;&lt;![CDATA[9159e008a44183e19d75af12984cb51908d4cc7d]]&gt;&lt;/PASSWORD&gt;&lt;AUTH_DRIVER&gt;&lt;![CDATA[server_cipher]]&gt;&lt;/AUTH_DRIVER&gt;&lt;ENABLED&gt;1&lt;/ENABLED&gt;&lt;TEMPLATE&gt;&lt;TOKEN_PASSWORD&gt;&lt;![CDATA[4d98d635c74634b81a28cb2e636102190d3fd480]]&gt;&lt;/TOKEN_PASSWORD&gt;&lt;/TEMPLATE&gt;&lt;/USER&gt;&lt;QUOTAS&gt;&lt;ID&gt;1&lt;/ID&gt;&lt;DATASTORE_QUOTA&gt;&lt;/DATASTORE_QUOTA&gt;&lt;NETWORK_QUOTA&gt;&lt;/NETWORK_QUOTA&gt;&lt;VM_QUOTA&gt;&lt;/VM_QUOTA&gt;&lt;IMAGE_QUOTA&gt;&lt;/IMAGE_QUOTA&gt;&lt;/QUOTAS&gt;&lt;DEFAULT_USER_QUOTAS&gt;&lt;DATASTORE_QUOTA&gt;&lt;/DATASTORE_QUOTA&gt;&lt;NETWORK_QUOTA&gt;&lt;/NETWORK_QUOTA&gt;&lt;VM_QUOTA&gt;&lt;/VM_QUOTA&gt;&lt;IMAGE_QUOTA&gt;&lt;/IMAGE_QUOTA&gt;&lt;/DEFAULT_USER_QUOTAS&gt;&lt;/USER_POOL&gt;</string></value>\r\n<value><i4>0</i4></value>\r\n</data></array></value></param>\r\n</params>\r\n</methodResponse>\r\n"
+    http_version: 
+  recorded_at: Wed, 08 Nov 2017 12:15:36 GMT
+recorded_with: VCR 3.0.3

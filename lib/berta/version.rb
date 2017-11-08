@@ -1,3 +1,3 @@
 module Berta
-  VERSION = '1.6.1'.freeze
+  VERSION = '2.0.0'.freeze
 end

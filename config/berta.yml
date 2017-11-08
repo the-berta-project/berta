@@ -18,3 +18,4 @@ berta:
     level: error                   # Logging level
   dry-run: false                   # Berta won't change anything on running instance of OpenNebula
   debug: false                     # Debug mode
+  email-template:                  # Email template to use for notification
