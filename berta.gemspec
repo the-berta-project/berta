@@ -7,9 +7,9 @@ Gem::Specification.new do |s|
   s.version = Berta::VERSION
   s.summary = 'Berta VM expiration tool'
   s.description = 'Berta will check all VMs on OpenNebula cloud for expiration date'
-  s.authors = ['Dusan Baran']
-  s.email = 'dbaran@hotmail.sk'
-  s.homepage = 'https://github.com/dudoslav/berta'
+  s.authors = ['Dusan Baran', 'Boris Parak', 'Michal Kimle']
+  s.email = 'work.dusanbaran@gmail.com'
+  s.homepage = 'https://github.com/the-berta-project/berta'
   s.license = 'Apache License, Version 2.0'
   s.required_ruby_version = '>= 2.1'
 
