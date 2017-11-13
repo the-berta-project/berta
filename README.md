@@ -25,7 +25,7 @@ gem install berta
 From source:
 
 ```bash
-git clone git@github.com:the-berta-project/berta.git
+git clone https://github.com/the-berta-project/berta.git
 cd berta
 gem install bundler
 bundle install
