@@ -34,7 +34,7 @@ describe Berta::EntityHandler do
   end
 
   describe '.notify' do
-    context 'for User' do
+    context 'with User' do
       context 'with noone to notify', :vcr do
         it 'wont send emails' do
           service.users.each { |u| u.notify(service.user_vms(u)) }
@@ -57,7 +57,7 @@ describe Berta::EntityHandler do
       end
     end
 
-    context 'for Group' do
+    context 'with Group' do
       context 'with noone to notify', :vcr do
         it 'wont send emails' do
           service.groups.each { |g| g.notify(service.group_vms(g)) }
@@ -80,7 +80,7 @@ describe Berta::EntityHandler do
       end
     end
 
-    context 'for Both' do
+    context 'with Both' do
       context '1 user to notify and 1 group to notify', :vcr do
         it 'will send 2 emails' do
           service.users.each { |u| u.notify(service.user_vms(u)) }

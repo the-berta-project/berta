@@ -1,5 +1,6 @@
 require 'thor'
 require 'yell'
+require 'mail'
 
 module Berta
   # CLI for berta

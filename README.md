@@ -4,11 +4,9 @@
 
 # Berta
 
-[![Build Status](https://travis-ci.org/dudoslav/berta.svg?branch=master)](https://travis-ci.org/dudoslav/berta)
-[![Coverage Status](https://coveralls.io/repos/github/dudoslav/berta/badge.svg?branch=master)](https://coveralls.io/github/dudoslav/berta?branch=master)
-[![Code Climate](https://codeclimate.com/github/dudoslav/berta/badges/gpa.svg)](https://codeclimate.com/github/dudoslav/berta)
-[![Inline docs](http://inch-ci.org/github/dudoslav/berta.svg?branch=master)](http://inch-ci.org/github/dudoslav/berta)
-[![Dependency Status](https://gemnasium.com/badges/github.com/dudoslav/berta.svg)](https://gemnasium.com/github.com/dudoslav/berta)
+[![Build Status](https://travis-ci.org/the-berta-project/berta.svg?branch=master)](https://travis-ci.org/the-berta-project/berta)
+[![Coverage Status](https://coveralls.io/repos/github/the-berta-project/berta/badge.svg?branch=master)](https://coveralls.io/github/the-berta-project/berta?branch=master)
+[![Maintainability](https://api.codeclimate.com/v1/badges/561a29e682b0006b6f44/maintainability)](https://codeclimate.com/github/the-berta-project/berta/maintainability)
 [![Gem Version](https://badge.fury.io/rb/berta.svg)](https://badge.fury.io/rb/berta)
 
 Berta cleans cloud from unused vms. She sets expiration to all virtual machines
@@ -27,7 +25,7 @@ gem install berta
 From source:
 
 ```bash
-git clone git://github.com/dudoslav/berta.git
+git clone git@github.com:the-berta-project/berta.git
 cd berta
 gem install bundler
 bundle install
