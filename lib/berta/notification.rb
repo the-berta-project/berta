@@ -20,7 +20,7 @@ module Berta
       text = template.render(Object.new, name: name, email: email, type: type, vms: vms_hash(vms))
       logger.info "Sending mail to entity: #{name} on email: #{email}"
       logger.debug { text }
-      Mail.new(text).deliver unless Berta::Settings['dry-run']
+      Mail.deliver(text) unless Berta::Settings['dry-run']
     end
 
     def vms_hash(vms)

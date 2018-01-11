@@ -64,6 +64,16 @@ module Berta
                  required: true,
                  default: safe_fetch(%w[email-template]),
                  type: :string
+    class_option :'email-type',
+                 required: true,
+                 default: safe_fetch(%w[email-type]),
+                 type: :string
+    class_option :'smtp-address',
+                 default: safe_fetch(%w[smtp address]),
+                 type: :string
+    class_option :'smtp-port',
+                 default: safe_fetch(%w[smtp port]),
+                 type: :numeric
 
     desc 'cleanup', 'Task that sets all expiration to all vms and notifies users'
     def cleanup
@@ -105,6 +115,9 @@ module Berta
       settings['logging']['file'] = options['logging-file']
       settings['logging']['level'] = options['logging-level']
       settings['email-template'] = options['email-template']
+      settings['email-type'] = options['email-type']
+      settings['smtp']['address'] = options['smtp-address']
+      settings['smtp']['port'] = options['smtp-port']
       Berta::Settings.merge!(settings)
     end
 
@@ -129,7 +142,10 @@ module Berta
     end
 
     def initialize_email
-      Mail.defaults { delivery_method :sendmail }
+      email_type = Berta::Settings['email-type']
+      params = {}
+      params = Berta::Settings[email_type].each_with_object({}) { |(k, v), h| h[k.to_sym] = v } if Berta::Settings[email_type]
+      Mail.defaults { delivery_method email_type.to_sym, params }
     end
   end
 end
