@@ -21,9 +21,7 @@ module Berta
           # @raise [Berta::Errors::OpenNebula::ResourceStateError]
           # @raise [Berta::Errors::OpenNebula::ResourceRetrievalError]
           def handle_error
-            unless block_given?
-              raise Berta::Errors::OpenNebula::StubError, 'OpenNebula service-wrapper was called without a block!'
-            end
+            raise Berta::Errors::OpenNebula::StubError, 'OpenNebula service-wrapper was called without a block!' unless block_given?
             return_value = yield
             return return_value unless ::OpenNebula.is_error?(return_value)
             raise decode_error(return_value.errno), return_value.message
