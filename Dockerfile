@@ -18,15 +18,17 @@ SHELL ["/bin/bash", "-c"]
 
 RUN apt-get update && \
     apt-get --assume-yes upgrade && \
-    apt-get --assume-yes install ruby-dev zlib1g-dev gcc patch make gettext-base
+    apt-get --assume-yes install ruby-dev zlib1g-dev gcc patch make
 
 RUN gem install ${name} -v "${version}" --no-document
 
 RUN useradd --system --shell /bin/false --home ${spoolDir} --create-home ${name} && \
     usermod -L ${name} && \
     mkdir -p ${templateDir} ${logDir} && \
-    chown -R ${name}:${name} ${spoolDir} ${logDir}
+    chown -R ${name}:${name} ${spoolDir} ${logDir} ${templateDir}
 
 VOLUME ${templateDir}
+
+USER berta
 
 ENTRYPOINT ["berta"]
