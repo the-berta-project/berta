@@ -1,0 +1,33 @@
+version: 2
+jobs:
+  build:
+    branches:
+      ignore:
+        - /.*/
+    docker:
+      - image: docker:stable
+    working_directory: /root/working_directory
+    steps:
+      - run: apk add --no-cache git openssh
+      - checkout
+      - setup_remote_docker
+      - run: |
+          git config --global --replace-all versionsort.prereleasesuffix ".alpha"
+          git config --global --add versionsort.prereleasesuffix ".beta"
+      - run: |
+          TAG=${CIRCLE_TAG#v}
+          BRANCH=${TAG/%.*/.x}
+          VERSION=${TAG}
+          LATEST=$(git tag --sort=-version:refname | head -n 1)
+          docker login -u $DOCKER_USER -p $DOCKER_PASS
+          docker build --build-arg branch=$BRANCH --build-arg version="$VERSION" -t $DOCKERHUB_REPO/$CIRCLE_PROJECT_REPONAME:$TAG ./$DOCKERFILE_DIR
+          docker push $DOCKERHUB_REPO/$CIRCLE_PROJECT_REPONAME:$TAG
+          if [ "$LATEST" == "$CIRCLE_TAG" ]; then
+            docker tag $DOCKERHUB_REPO/$CIRCLE_PROJECT_REPONAME:$TAG $DOCKERHUB_REPO/$CIRCLE_PROJECT_REPONAME:latest
+            docker push $DOCKERHUB_REPO/$CIRCLE_PROJECT_REPONAME:latest
+          fi
+deployment:
+  fake_deploy_for_cci2:
+    tag: /v.*/
+    commands:
+      - echo "make tags run in 2.0"
