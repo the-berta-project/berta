@@ -20,11 +20,11 @@ jobs:
           VERSION=${TAG}
           LATEST=$(git tag --sort=-version:refname | head -n 1)
           docker login -u $DOCKER_USER -p $DOCKER_PASS
-          docker build --build-arg branch=$BRANCH --build-arg version="$VERSION" -t $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_ORGANIZATIONNAME:$TAG ./$DOCKERFILE_DIR
-          docker push $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_ORGANIZATIONNAME:$TAG
+          docker build --build-arg branch=$BRANCH --build-arg version="$VERSION" -t $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_REPONAME:$TAG ./$DOCKERFILE_DIR
+          docker push $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_REPONAME:$TAG
           if [ "$LATEST" == "$CIRCLE_TAG" ]; then
-            docker tag $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_ORGANIZATIONNAME:$TAG $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_ORGANIZATIONNAME:latest
-            docker push $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_ORGANIZATIONNAME:latest
+            docker tag $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_REPONAME:$TAG $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_REPONAME:latest
+            docker push $DOCKERHUB_ORGANIZATION/$CIRCLE_PROJECT_REPONAME:latest
           fi
 deployment:
   fake_deploy_for_cci2:
