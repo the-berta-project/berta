@@ -7,10 +7,10 @@ module Berta
 
     # Constructs Virtual machine handler from given vm.
     #
-    # @param vm [OpenNebula::VirtualMachine] VM that will
+    # @param virtual_machine [OpenNebula::VirtualMachine] VM that will
     #   this handler use.
-    def initialize(vm)
-      @handle = vm
+    def initialize(virtual_machine)
+      @handle = virtual_machine
     end
 
     # Updates vms expirations. That means it adds default
