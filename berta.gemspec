@@ -29,7 +29,7 @@ Gem::Specification.new do |s|
 
   s.add_runtime_dependency 'chronic_duration', '~> 0.10'
   s.add_runtime_dependency 'mail', '~> 2.6'
-  s.add_runtime_dependency 'opennebula', '~> 5.2'
+  s.add_runtime_dependency 'opennebula', '~> 5.8'
   s.add_runtime_dependency 'settingslogic', '~> 2.0'
   s.add_runtime_dependency 'thor', '~> 0.19'
   s.add_runtime_dependency 'tilt', '~> 2.0'
