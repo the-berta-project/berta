@@ -43,7 +43,7 @@ module Berta
     def running_vms
       return @cached_vms if @cached_vms
       vm_pool = OpenNebula::VirtualMachinePool.new(client)
-      Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all }
+      Berta::Utils::OpenNebula::Helper.handle_error { vm_pool.info_all_extended }
       logger.debug "Fetched vms: #{vm_pool.map(&:id)}"
       @cached_vms = @filter.run(vm_pool.map { |vm| Berta::VirtualMachineHandler.new(vm) })
       @cached_vms
