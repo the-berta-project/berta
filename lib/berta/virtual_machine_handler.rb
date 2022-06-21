@@ -18,10 +18,8 @@ module Berta
     # invalid expiration it will be deleted. Other expirations
     # are kept.
     def update
-      exps = remove_invalid(expirations)
-      exps = add_default_expiration(exps)
-      return if exps == expirations
-      update_expirations(exps)
+      remove_invalid
+      add_default_expiration
     rescue Berta::Errors::BackendError => e
       logger.error "#{e.message} on vm with id #{handle['ID']}"
     end
@@ -71,13 +69,14 @@ module Berta
     end
 
     # Returns array of expirations on vm. Expirations are
-    # classes from USER_TEMPLATE/SCHED_ACTION.
+    # classes from SCHED_ACTION.
     #
     # @return [Array<Berta::Entities::Expiration>] All expirations on vm
     def expirations
       exps = []
-      handle.each('USER_TEMPLATE/SCHED_ACTION') \
-        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml)) }
+      start_time = handle.retrieve_elements('STIME').first.to_i
+      handle.each('TEMPLATE/SCHED_ACTION') \
+        { |saxml| exps.push(Berta::Entities::Expiration.from_xml(saxml, start_time)) }
       exps
     end
 
@@ -96,35 +95,27 @@ module Berta
 
     private
 
-    def remove_invalid(exps)
-      valid = exps.select(&:in_expiration_interval?)
-      if valid.length != exps.length
-        logger.info "Removing #{exps.length - valid.length} invalid expirations on vm with" \
-                    "id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"
+    def remove_invalid
+      invalid = expirations.reject(&:in_expiration_interval?)
+      if invalid
+        invalid.each do |exp|
+          logger.info "Removing invalid expirations #{exp.id} on vm with" \
+                      "id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}" \
+                      ", expires at #{Time.at(exp.time.to_i)}"
+          return if Berta::Settings['dry-run']
+          handle.sched_action_delete(exp.id)
+        end
       end
-      valid
     end
 
-    def add_default_expiration(exps)
+    def add_default_expiration
       unless default_expiration
         new_default = next_expiration
-        exps << new_default
         logger.info "Adding default expiration on vm with id=#{handle['ID']} usr=#{handle['UNAME']} grp=#{handle['GNAME']}"\
           ", expires at #{Time.at(new_default.time)}"
+        return if Berta::Settings['dry-run']
+        handle.sched_action_add(new_default.template)
       end
-      exps
-    end
-
-    # Sets array of expirations to vm, rewrites all old ones.
-    # Receiving empty array wont change anything.
-    #
-    # @note This method modifies OpenNebula database
-    # @param exps [Array<Berta::Entities::Expiration>] Expirations to use
-    def update_expirations(exps)
-      template = exps.inject('') { |temp, exp| temp + exp.template }
-      return if template == ''
-      logger.debug template.delete("\n ")
-      send_update(template)
     end
 
     # Sends data to opennebula service
@@ -140,7 +131,7 @@ module Berta
     #
     # @return [Numeric] Next sched action id
     def next_expiration_id
-      elems = handle.retrieve_elements('USER_TEMPLATE/SCHED_ACTION/ID')
+      elems = handle.retrieve_elements('TEMPLATE/SCHED_ACTION/ID')
       return 0 unless elems
       elems.to_a.max.to_i + 1
     end
