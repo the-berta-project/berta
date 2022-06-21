@@ -9,9 +9,14 @@ module Berta
       # @param xml [XMLElement] XML from which to create instance
       # @return [Berta::Entities::Expiration] Expiration from given xml
       # @raise [Berta::Errors::Entities::InvalidEntityXMLError] If XMLElement was not in correct format
-      def self.from_xml(xml)
+      def self.from_xml(xml, start_time=0)
         check_xml!(xml)
-        Berta::Entities::Expiration.new(xml['ID'], xml['TIME'], xml['ACTION'])
+        time = if xml['TIME'].start_with?('+')
+                 start_time + xml['TIME'].to_i
+               else
+                 xml['TIME']
+               end
+        Berta::Entities::Expiration.new(xml['ID'], time, xml['ACTION'])
       end
 
       # Raises error if XML element is not in correct format.
@@ -37,7 +42,7 @@ module Berta
       end
 
       # Generate schelude action template that can be used
-      # in VMS USER_TEMPLATE/SCHED_ACTION
+      # in VMS TEMPLATE/SCHED_ACTION
       #
       # @return [String] Schelude action template
       def template
@@ -45,7 +50,9 @@ module Berta
       SCHED_ACTION = [
           ID     = "#{id}",
           ACTION = "#{action}",
-          TIME   = "#{time}"
+          TIME   = "#{time}",
+          END_TYPE = "2",
+          END_VALUE = "#{time}"
       ]
       VM_TEMPLATE
       end
